@@ -16,16 +16,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
+	
 	private final PasswordEncoder passwordEncoder;
 	private final UserAuthService userService;
-
+	
 	@Autowired
 	public SecurityConfig(PasswordEncoder passwordEncoder, UserAuthService userService) {
 		this.passwordEncoder = passwordEncoder;
 		this.userService = userService;
 	}
-
+	
 	@Override
 	protected void configure(@NotNull HttpSecurity http) throws Exception {
 		http
@@ -37,19 +37,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.logout().logoutSuccessUrl("/login").and()
 				.rememberMe();
 	}
-
+	
 	@Override
 	protected void configure(@NotNull AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(daoAuthenticationProvider());
 	}
-
+	
 	@Bean
 	public @NotNull DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
+		
 		provider.setPasswordEncoder(passwordEncoder);
 		provider.setUserDetailsService(userService);
-
+		
 		return provider;
 	}
 }

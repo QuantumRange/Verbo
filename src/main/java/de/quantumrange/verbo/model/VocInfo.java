@@ -14,11 +14,11 @@ import java.util.Set;
 @AllArgsConstructor
 
 public class VocInfo {
-
+	
 	private long snowflake;
 	private int correct, wrong;
 	private @NotNull Set<VocView> views;
 	private boolean starred;
 	private @NotNull String note;
-
+	
 }

@@ -13,17 +13,17 @@ import java.util.Set;
 @Setter
 @Getter
 public class Course implements Identifiable {
-
+	
 	private long id;
 	private String name;
 	private Set<Long> users;
 	private Set<Long> sets;
-
+	
 	// For tests, etc.
 	private String currentNote;
 	private Set<Long> currentSets;
 	private String code;
-
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -31,12 +31,12 @@ public class Course implements Identifiable {
 		Course course = (Course) o;
 		return getId() == course.getId();
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public long getId() {
 		return id;

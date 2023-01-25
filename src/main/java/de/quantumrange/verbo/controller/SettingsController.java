@@ -13,19 +13,19 @@ import java.security.Principal;
 @Controller
 @RequestMapping("setting")
 public class SettingsController {
-
+	
 	private final ControlService controlService;
-
+	
 	@Autowired
 	public SettingsController(ControlService controlService) {
 		this.controlService = controlService;
 	}
-
+	
 	@GetMapping("/learn")
 	public String learn(Principal principal, Model model) {
 		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
-
+		
 		return "setting/learn";
 	}
-
+	
 }

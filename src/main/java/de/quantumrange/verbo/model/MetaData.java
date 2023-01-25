@@ -10,9 +10,9 @@ import java.util.HashMap;
 @JsonSerialize(using = MetaSerializer.class)
 @JsonDeserialize(using = MetaDeserializer.class)
 public class MetaData extends HashMap<MetaKey<?>, Object> {
-
+	
 	public MetaData() {
 		super(MetaKey.values.length);
 	}
-
+	
 }

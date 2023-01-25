@@ -12,7 +12,7 @@ import java.util.Set;
 import static de.quantumrange.verbo.model.Permission.*;
 
 public enum Role {
-
+	
 	ROOT("Root", "fa-solid fa-user-secret", EnumSet.allOf(Permission.class)),
 	ADMIN("Admin", "fa-solid fa-shield", EnumSet.allOf(Permission.class)),
 	TEACHER("Teacher", "fa-solid fa-chalkboard-user", Sets.newHashSet(
@@ -55,39 +55,39 @@ public enum Role {
 			SITE_COURSES,
 			// SITE_LIVE, TODO: uncomment if live is done!
 			SITE_MY));
-
+	
 	private final @NotNull String displayName;
 	private final @NotNull String style;
 	private final @NotNull Set<Permission> permissions;
-
+	
 	Role(@NotNull String displayName, @NotNull String style, @NotNull Set<Permission> permissions) {
 		this.displayName = displayName;
 		this.style = style;
 		this.permissions = permissions;
 	}
-
+	
 	public static @Nullable Role getUserByGrantedAuthority(@NotNull GrantedAuthority authority) {
 		for (Role role : values()) {
 			if (authority.getAuthority().equals("ROLE_" + role.name())) return role;
 		}
-
+		
 		return null;
 	}
-
+	
 	public @NotNull String getStyle() {
 		return style;
 	}
-
+	
 	public @NotNull String getDisplayName() {
 		return displayName;
 	}
-
+	
 	public @NotNull Set<Permission> getPermissions() {
 		return permissions;
 	}
-
+	
 	public @NotNull SimpleGrantedAuthority getGrantedAuthority() {
 		return new SimpleGrantedAuthority("ROLE_" + this.name());
 	}
-
+	
 }

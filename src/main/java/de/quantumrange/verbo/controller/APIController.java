@@ -18,95 +18,95 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/")
 public class APIController {
-
+	
 	private final UserService userService;
 	private final VocSetService vocSetService;
 	private final VocService vocService;
 	private final VocDetailService vocDetailService;
-
+	
 	@Autowired
 	public APIController(UserService userService,
-						 VocSetService vocSetService,
-						 VocService vocService,
-						 VocDetailService vocDetailService) {
+	                     VocSetService vocSetService,
+	                     VocService vocService,
+	                     VocDetailService vocDetailService) {
 		this.userService = userService;
 		this.vocSetService = vocSetService;
 		this.vocService = vocService;
 		this.vocDetailService = vocDetailService;
 	}
-
+	
 	@PostMapping(path = "set/mark")
 	@PreAuthorize("hasAnyAuthority('api:set:mark')")
 	public boolean mark(Principal principal,
-						@RequestParam(name = "id") String id) {
+	                    @RequestParam(name = "id") String id) {
 		User user = userService.findByPrinciple(principal);
 		VocSet set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
-
+		
 		if (user.getMarked().contains(set.getId())) {
 			user.getMarked().remove(set.getId());
 		} else {
 			user.getMarked().add(set.getId());
 		}
-
+		
 		userService.update(user);
-
+		
 		return true;
 	}
-
+	
 	@PostMapping(path = "set")
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public TSVocSet requestSet(Principal principal,
-							   @RequestBody String id) {
+	                           @RequestBody String id) {
 		User user = userService.findByPrinciple(principal);
 		VocSet set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
-
+		
 		TSVocSet tsSet = new TSVocSet(Long.toString(set.getId()),
 				set.getName(),
 				set.getOwner(),
 				new ArrayList<>());
-
+		
 		for (Long vocabulary : set.getVocabularies()) {
 			Voc voc = vocService.findByID(vocabulary)
 					.orElseThrow();
-
+			
 			tsSet.vocabularies().add(getVoc(user, voc));
 		}
-
+		
 		return tsSet;
 	}
-
+	
 	@PostMapping(path = "voc")
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public TSVoc requestVoc(Principal principal,
-							@RequestBody String id) {
+	                        @RequestBody String id) {
 		User user = userService.findByPrinciple(principal);
 		Voc voc = vocService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
-
+		
 		return getVoc(user, voc);
 	}
-
+	
 	@PostMapping(path = "voc/delete")
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public boolean requestVocDelete(Principal principal,
-									@RequestBody Map<String, String> data) {
+	                                @RequestBody Map<String, String> data) {
 		User user = userService.findByPrinciple(principal);
 		VocSet set = vocSetService.findByID(Identifiable.getId(data.get("set")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid set ID!"));
 		Voc voc = vocService.findByID(Identifiable.getId(data.get("voc")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid voc ID!"));
-
+		
 		if (set.getOwner() != user.getId())
 			throw new IllegalStateException("Only owner edits allowed");
-
+		
 		set.getVocabularies().remove(voc.getId());
 		vocSetService.update(set);
-
+		
 		return true;
 	}
-
+	
 	@NotNull
 	private TSVoc getVoc(User user, Voc voc) {
 		return new TSVoc(Long.toString(voc.getId()),
@@ -126,22 +126,22 @@ public class APIController {
 								.sorted((o1, o2) -> Long.compare(o2.timestamp, o1.timestamp))
 								.limit(5)
 								.toList())
-
+						
 						.orElseGet(Collections::emptyList));
 	}
-
+	
 	@PostMapping("learn")
 	@PreAuthorize("hasAnyAuthority('site:learn')")
 	@ResponseBody
 	public boolean learnResponse(@RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent,
-								 Principal principal,
-								 @RequestBody TSLearnResult result) {
+	                             Principal principal,
+	                             @RequestBody TSLearnResult result) {
 		User user = userService.findByPrinciple(principal);
 		Voc voc = vocService.findByID(Long.parseLong(result.snowflake))
 				.orElseThrow();
-
+		
 		UserAgent ua = UserAgent.parseUserAgentString(userAgent);
-
+		
 		vocDetailService.insert(user.getId(),
 				Long.parseLong(result.snowflake()),
 				new VocView(result.timestamp(),
@@ -157,37 +157,37 @@ public class APIController {
 						result.reversed()));
 		return true;
 	}
-
+	
 	record TSVoc(String id,
-				 String question,
-				 String answer,
-				 Language questionLanguage,
-				 Language answerLanguage,
-				 List<TSVocView> views) {
+	             String question,
+	             String answer,
+	             Language questionLanguage,
+	             Language answerLanguage,
+	             List<TSVocView> views) {
 	}
-
+	
 	record TSVocView(long timestamp,
-					 String answer,
-					 int correctness,
-					 int classification,
-					 int responseTime,
-					 int mode,
-					 boolean reversed) {
+	                 String answer,
+	                 int correctness,
+	                 int classification,
+	                 int responseTime,
+	                 int mode,
+	                 boolean reversed) {
 	}
-
+	
 	record TSVocSet(String id,
-					String name,
-					long owner,
-					List<TSVoc> vocabularies) {
+	                String name,
+	                long owner,
+	                List<TSVoc> vocabularies) {
 	}
-
+	
 	record TSLearnResult(String snowflake,
-						 long timestamp,
-						 String answer,
-						 int classification,
-						 int mode,
-						 int responseTime,
-						 boolean reversed) {
+	                     long timestamp,
+	                     String answer,
+	                     int classification,
+	                     int mode,
+	                     int responseTime,
+	                     boolean reversed) {
 	}
-
+	
 }

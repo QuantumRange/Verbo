@@ -12,34 +12,34 @@ import java.util.Set;
 
 @Service
 public class PasswordService {
-
+	
 	private final Set<String> knownPasswords = new HashSet<>();
-
+	
 	public PasswordService() {
 		File file = new File("passwords.txt");
-
+		
 		if (file.exists()) {
 			try {
 				List<String> list = Files.readAllLines(file.toPath());
-
+				
 				knownPasswords.addAll(list);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
-
+	
 	public static int damerauLevenshteinDistance(@NotNull String str1, @NotNull String str2) {
 		int[][] substitutionMatrix = new int[str2.length() + 1][str1.length() + 1];
-
+		
 		for (int i = 0; i < substitutionMatrix.length; i++) {
 			substitutionMatrix[i][0] = i;
 		}
-
+		
 		for (int i = 0; i < substitutionMatrix[0].length; i++) {
 			substitutionMatrix[0][i] = i;
 		}
-
+		
 		for (int y = 1; y < str2.length() + 1; y++) {
 			for (int x = 1; x < str1.length() + 1; x++) {
 				substitutionMatrix[y][x] = min(
@@ -52,16 +52,16 @@ public class PasswordService {
 				}
 			}
 		}
-
+		
 		return substitutionMatrix[str2.length()][str1.length()];
 	}
-
+	
 	private static int min(int i1, int i2, int i3) {
 		return Math.min(i1, Math.min(i2, i3));
 	}
-
+	
 	public boolean isUsedPassword(String password) {
 		return knownPasswords.contains(password);
 	}
-
+	
 }

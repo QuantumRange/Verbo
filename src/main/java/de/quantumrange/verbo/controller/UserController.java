@@ -17,17 +17,17 @@ import java.util.Map;
 
 @Controller
 public class UserController {
-
+	
 	private final ControlService controlService;
 	private final UserService userService;
 	private final InviteService inviteService;
 	private final VocDetailService vocDetailService;
 	private final PasswordEncoder passwordEncoder;
 	private final PasswordService passwordService;
-
+	
 	@Autowired
 	public UserController(ControlService controlService, UserService userService, InviteService inviteService,
-						  VocDetailService vocDetailService, PasswordEncoder passwordEncoder, PasswordService passwordService) {
+	                      VocDetailService vocDetailService, PasswordEncoder passwordEncoder, PasswordService passwordService) {
 		this.controlService = controlService;
 		this.userService = userService;
 		this.inviteService = inviteService;
@@ -35,78 +35,78 @@ public class UserController {
 		this.passwordEncoder = passwordEncoder;
 		this.passwordService = passwordService;
 	}
-
+	
 	@GetMapping("myAccount")
 	@PreAuthorize("hasAnyAuthority('site:my')")
 	public String home(Principal principal,
-					   Model model) {
+	                   Model model) {
 		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
-
+		
 		if (u.get(MetaKey.FORCE_PASSWORD_CHANGE)) {
 			if (!model.containsAttribute("error")) {
 				model.addAttribute("error", "You must change your password after resetting it!");
 			}
 		}
-
+		
 		model.addAttribute("nickname", u.getDisplayName());
 		model.addAttribute("amount", vocDetailService.findViewBy(u.getId())
 				.map(Map::size)
 				.orElse(0));
-
+		
 		return "user";
 	}
-
+	
 	@PostMapping("myAccount/nickname")
 	@PreAuthorize("hasAnyAuthority('site:my')")
 	public String nickname(Principal principal,
-						   Model model,
-						   @RequestParam("nickname") String nickname) {
+	                       Model model,
+	                       @RequestParam("nickname") String nickname) {
 		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
-
+		
 		nickname = nickname.replaceAll("[^a-zA-Z0-9 _áéíúóñÁÉÍÚÓÑ]", "");
-
+		
 		if (nickname.length() >= 30 || nickname.length() <= 3)
 			model.addAttribute("error", "Your nickname/display name is too long/short");
-
+		
 		if (model.containsAttribute("error"))
 			return home(principal, model);
-
+		
 		u.setDisplayName(nickname);
 		userService.update(u);
-
+		
 		model.addAttribute("success", "Your new nickname/display name is set!");
-
+		
 		return home(principal, model);
 	}
-
+	
 	@PostMapping("myAccount/password")
 	@PreAuthorize("hasAnyAuthority('site:my')")
 	public String nickname(Principal principal,
-						   Model model,
-						   @RequestParam("pw") String pw,
-						   @RequestParam("pwRepeat") String pwRepeat) {
+	                       Model model,
+	                       @RequestParam("pw") String pw,
+	                       @RequestParam("pwRepeat") String pwRepeat) {
 		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
-
+		
 		if (!pw.equals(pwRepeat))
 			model.addAttribute("error", ".-. Passwords must match");
-
+		
 		if (passwordService.isUsedPassword(pw))
 			model.addAttribute("error",
 					"This is one of the top 10000 most used passwords. Please educate yourself on how to create a secure password and come back later. (Oh and don't reuse passwords across websites. I'm serious. That's dangerous.)");
-
+		
 		if (pw.length() <= 6)
 			model.addAttribute("error", "Your password is too short");
-
+		
 		if (model.containsAttribute("error"))
 			return home(principal, model);
-
+		
 		u.setPassword(passwordEncoder.encode(pw));
 		u.set(MetaKey.FORCE_PASSWORD_CHANGE, false);
 		userService.update(u);
-
+		
 		model.addAttribute("success", "Your new password is set!");
-
+		
 		return home(principal, model);
 	}
-
+	
 }

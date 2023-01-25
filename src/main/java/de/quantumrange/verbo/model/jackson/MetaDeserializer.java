@@ -15,31 +15,31 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class MetaDeserializer extends StdDeserializer<MetaData> {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(MetaDeserializer.class);
-
+	
 	public MetaDeserializer() {
 		super(MetaData.class);
 	}
-
+	
 	@Override
 	public MetaData deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		MetaData metadata = new MetaData();
-
+		
 		TreeNode node = p.getCodec().readTree(p);
-
+		
 		for (int i = 0; i < node.size(); i++) {
 			JsonNode treeNode = (JsonNode) node.get(i);
-
+			
 			String name = treeNode.get("name").asText();
 			MetaKey<?> key = null;
-
+			
 			for (MetaKey<?> value : MetaKey.values) {
 				if (value.getName().equals(name)) {
 					key = value;
 				}
 			}
-
+			
 			if (key != null) {
 				ObjectMapper mapper = new JsonMapper();
 				try {
@@ -50,8 +50,8 @@ public class MetaDeserializer extends StdDeserializer<MetaData> {
 				}
 			} else log.warn("Can't resolve MetaKey with string {}.", name);
 		}
-
+		
 		return metadata;
 	}
-
+	
 }

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.quantumrange.verbo.model.VocSet.SAVE_FORMAT;
+import static de.quantumrange.verbo.model.Vocabulary.SAVE_FORMAT;
 
 @Controller
 @RequestMapping("set")
@@ -48,7 +48,7 @@ public class VocSetController {
 	                         @PathVariable(name = "set") String setStr,
 	                         @RequestBody String vocStr) {
 		User user = userService.findByPrinciple(principal);
-		VocSet set = vocSetService.findByID(Identifiable.getId(setStr))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(setStr))
 				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
 		long vocId = Identifiable.getId(vocStr);
 		
@@ -67,7 +67,7 @@ public class VocSetController {
 	                   Model model,
 	                   @PathVariable(name = "id") String id) {
 		User user = controlService.getUser(principal, model, MenuID.SET);
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
 		
 		model.addAttribute("set", set);
@@ -75,41 +75,41 @@ public class VocSetController {
 				.map(User::getDisplayName)
 				.orElse("N/A"));
 		
-		Set<Voc> vocs = set.getVocabularies().stream()
+		Set<Word> words = set.getVocabularies().stream()
 				.map(vocService::findByID)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.collect(Collectors.toSet());
 		
 		
-		Map<Long, VocInfo> map = vocDetailService.findViewBy(user.getId())
+		Map<Long, WordInfo> map = vocDetailService.findViewBy(user.getId())
 				.orElseGet(Map::of);
 		
-		Map<Voc, String> progress = new HashMap<>();
-		Map<Voc, String> progressReversed = new HashMap<>();
+		Map<Word, String> progress = new HashMap<>();
+		Map<Word, String> progressReversed = new HashMap<>();
 		
-		for (Voc voc : vocs) {
-			VocInfo info = map.getOrDefault(voc.getId(), null);
+		for (Word word : words) {
+			WordInfo info = map.getOrDefault(word.getId(), null);
 			
 			if (info == null) continue;
 			
 			// TODO: Remove duplicate line
 			if (hasViews(info, false))
-				progress.put(voc, isLearned(info, false) ? "text-bg-success" : "text-bg-warning");
+				progress.put(word, isLearned(info, false) ? "text-bg-success" : "text-bg-warning");
 			if (hasViews(info, true))
-				progressReversed.put(voc, isLearned(info, true) ? "text-bg-success" : "text-bg-warning");
+				progressReversed.put(word, isLearned(info, true) ? "text-bg-success" : "text-bg-warning");
 		}
 		
-		model.addAttribute("vocabularies", vocs);
-		model.addAttribute("left", vocs.stream().findFirst()
-				.map(Voc::getQuestionLang)
+		model.addAttribute("vocabularies", words);
+		model.addAttribute("left", words.stream().findFirst()
+				.map(Word::getQuestionLang)
 				.orElse(Language.ENGLISH));
-		model.addAttribute("right", vocs.stream().findFirst()
-				.map(Voc::getAnswerLang)
+		model.addAttribute("right", words.stream().findFirst()
+				.map(Word::getAnswerLang)
 				.orElse(Language.ENGLISH));
 		
-		inject(model, "default_", vocs, map, false);
-		inject(model, "reversed_", vocs, map, true);
+		inject(model, "default_", words, map, false);
+		inject(model, "reversed_", words, map, true);
 		
 		model.addAttribute("progress", progress);
 		model.addAttribute("progressReversed", progressReversed);
@@ -117,7 +117,7 @@ public class VocSetController {
 		return "vocSet";
 	}
 	
-	private boolean isLearned(VocInfo voc, boolean reversed) {
+	private boolean isLearned(WordInfo voc, boolean reversed) {
 		return voc.getViews().stream()
 				.filter(view -> view.reversed() == reversed)
 				.sorted((o1, o2) -> Long.compare(o2.timestamp(), o1.timestamp())) // TODO: Bug
@@ -126,7 +126,7 @@ public class VocSetController {
 				.count() == 3;
 	}
 	
-	private boolean hasViews(VocInfo voc, boolean reversed) {
+	private boolean hasViews(WordInfo voc, boolean reversed) {
 		return voc.getViews()
 				.stream()
 				.anyMatch(vocView -> vocView.reversed() == reversed);
@@ -134,21 +134,21 @@ public class VocSetController {
 	
 	private void inject(Model model,
 	                    String prefix,
-	                    Set<Voc> vocs,
-	                    Map<Long, VocInfo> map,
+	                    Set<Word> words,
+	                    Map<Long, WordInfo> map,
 	                    boolean reversed) {
 		// three times in a row to count as learned
-		double learned = ((double) (vocs.stream()
-				.filter(voc -> map.containsKey(voc.getId()))
-				.map(voc -> map.get(voc.getId()))
+		double learned = ((double) (words.stream()
+				.filter(word -> map.containsKey(word.getId()))
+				.map(word -> map.get(word.getId()))
 				.filter(voc -> isLearned(voc, reversed))
-				.count()) / vocs.size()) * 100.;
+				.count()) / words.size()) * 100.;
 		model.addAttribute(prefix + "vLearned", learned);
 		
-		double learning = (((double) (vocs.stream()
-				.filter(voc -> map.containsKey(voc.getId()))
-				.filter(voc -> hasViews(map.get(voc.getId()), reversed))
-				.count()) / vocs.size()) * 100.);
+		double learning = (((double) (words.stream()
+				.filter(word -> map.containsKey(word.getId()))
+				.filter(word -> hasViews(map.get(word.getId()), reversed))
+				.count()) / words.size()) * 100.);
 		
 		model.addAttribute(prefix + "vLearning", learning);
 		
@@ -162,7 +162,7 @@ public class VocSetController {
 	                     Model model,
 	                     @PathVariable(name = "id") String id) {
 		User user = controlService.getUser(principal, model, MenuID.SET);
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
 		
 		model.addAttribute("set", set);
@@ -175,7 +175,7 @@ public class VocSetController {
 	public String deleteConfirm(Principal principal,
 	                            @PathVariable(name = "id") String id) {
 		User user = userService.findByPrinciple(principal);
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
 		
 		if (set.getOwner() != user.getId()) {
@@ -236,7 +236,7 @@ public class VocSetController {
 			Language left = Language.valueOf(langLeft);
 			Language right = Language.valueOf(langRight);
 			
-			VocSet set = new VocSet(vocSetService.generateID(),
+			Vocabulary set = new Vocabulary(vocSetService.generateID(),
 					name,
 					user.getId(),
 					SAVE_FORMAT.format(LocalDateTime.now()),
@@ -246,7 +246,7 @@ public class VocSetController {
 				String[] split = l.split(";");
 				if (split.length != 2) continue;
 				
-				Voc v = new Voc(vocService.generateID(),
+				Word v = new Word(vocService.generateID(),
 						split[0],
 						left,
 						split[1],

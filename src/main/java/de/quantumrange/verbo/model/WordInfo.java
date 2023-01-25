@@ -1,23 +1,24 @@
 package de.quantumrange.verbo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Table;
 import org.jetbrains.annotations.NotNull;
 
+import javax.persistence.Entity;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 
-public class VocInfo {
+@Deprecated(forRemoval = true)
+public class WordInfo {
 	
 	private long snowflake;
 	private int correct, wrong;
-	private @NotNull Set<VocView> views;
+	private @NotNull Set<WordView> views;
 	private boolean starred;
 	private @NotNull String note;
 	

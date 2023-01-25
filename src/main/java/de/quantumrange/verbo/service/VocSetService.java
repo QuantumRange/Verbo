@@ -1,6 +1,6 @@
 package de.quantumrange.verbo.service;
 
-import de.quantumrange.verbo.model.VocSet;
+import de.quantumrange.verbo.model.Vocabulary;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -9,19 +9,19 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Service
-public class VocSetService implements DataService<VocSet> {
+public class VocSetService implements DataService<Vocabulary> {
 	
 	private static final File file = new File("sets.json");
 	
-	private final @NotNull List<VocSet> sets;
-	private final @NotNull Map<Long, VocSet> linker;
+	private final @NotNull List<Vocabulary> sets;
+	private final @NotNull Map<Long, Vocabulary> linker;
 	
 	public VocSetService() {
 		this.sets = _read(file)
 				.orElse(new ArrayList<>());
 		linker = new HashMap<>();
 		
-		for (VocSet set : sets) {
+		for (Vocabulary set : sets) {
 			linker.put(set.getId(), set);
 		}
 		
@@ -29,12 +29,12 @@ public class VocSetService implements DataService<VocSet> {
 	}
 	
 	@Override
-	public @NotNull Optional<VocSet> findByID(long id) {
+	public @NotNull Optional<Vocabulary> findByID(long id) {
 		return Optional.ofNullable(linker.getOrDefault(id, null));
 	}
 	
 	@Override
-	public void update(@NotNull VocSet data) {
+	public void update(@NotNull Vocabulary data) {
 		sets.replaceAll(vocSet -> {
 			if (vocSet.getId() == data.getId()) {
 				return data;
@@ -46,7 +46,7 @@ public class VocSetService implements DataService<VocSet> {
 	}
 	
 	@Override
-	public void insert(@NotNull VocSet data) {
+	public void insert(@NotNull Vocabulary data) {
 		sets.add(data);
 		linker.put(data.getId(), data);
 		
@@ -54,7 +54,7 @@ public class VocSetService implements DataService<VocSet> {
 	}
 	
 	@Override
-	public void remove(@NotNull VocSet data) {
+	public void remove(@NotNull Vocabulary data) {
 		sets.remove(data);
 		linker.remove(data.getId());
 		
@@ -67,12 +67,12 @@ public class VocSetService implements DataService<VocSet> {
 	}
 	
 	@Override
-	public Stream<VocSet> stream() {
+	public Stream<Vocabulary> stream() {
 		return sets.stream();
 	}
 	
 	@Override
-	public Stream<VocSet> parallel() {
+	public Stream<Vocabulary> parallel() {
 		return sets.parallelStream();
 	}
 	
@@ -82,7 +82,7 @@ public class VocSetService implements DataService<VocSet> {
 	}
 	
 	@Override
-	public Class<VocSet> getClazz() {
-		return VocSet.class;
+	public Class<Vocabulary> getClazz() {
+		return Vocabulary.class;
 	}
 }

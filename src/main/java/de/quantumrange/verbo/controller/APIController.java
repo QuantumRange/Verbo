@@ -40,7 +40,7 @@ public class APIController {
 	public boolean mark(Principal principal,
 	                    @RequestParam(name = "id") String id) {
 		User user = userService.findByPrinciple(principal);
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
 		if (user.getMarked().contains(set.getId())) {
@@ -59,7 +59,7 @@ public class APIController {
 	public TSVocSet requestSet(Principal principal,
 	                           @RequestBody String id) {
 		User user = userService.findByPrinciple(principal);
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
 		TSVocSet tsSet = new TSVocSet(Long.toString(set.getId()),
@@ -68,10 +68,10 @@ public class APIController {
 				new ArrayList<>());
 		
 		for (Long vocabulary : set.getVocabularies()) {
-			Voc voc = vocService.findByID(vocabulary)
+			Word word = vocService.findByID(vocabulary)
 					.orElseThrow();
 			
-			tsSet.vocabularies().add(getVoc(user, voc));
+			tsSet.vocabularies().add(getVoc(user, word));
 		}
 		
 		return tsSet;
@@ -82,10 +82,10 @@ public class APIController {
 	public TSVoc requestVoc(Principal principal,
 	                        @RequestBody String id) {
 		User user = userService.findByPrinciple(principal);
-		Voc voc = vocService.findByID(Identifiable.getId(id))
+		Word word = vocService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
-		return getVoc(user, voc);
+		return getVoc(user, word);
 	}
 	
 	@PostMapping(path = "voc/delete")
@@ -93,36 +93,36 @@ public class APIController {
 	public boolean requestVocDelete(Principal principal,
 	                                @RequestBody Map<String, String> data) {
 		User user = userService.findByPrinciple(principal);
-		VocSet set = vocSetService.findByID(Identifiable.getId(data.get("set")))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(data.get("set")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid set ID!"));
-		Voc voc = vocService.findByID(Identifiable.getId(data.get("voc")))
+		Word word = vocService.findByID(Identifiable.getId(data.get("voc")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid voc ID!"));
 		
-		if (set.getOwner() != user.getId())
+		if (set.getOwner().getId() != user.getId())
 			throw new IllegalStateException("Only owner edits allowed");
 		
-		set.getVocabularies().remove(voc.getId());
+		set.getVocabularies().remove(word.getId());
 		vocSetService.update(set);
 		
 		return true;
 	}
 	
 	@NotNull
-	private TSVoc getVoc(User user, Voc voc) {
-		return new TSVoc(Long.toString(voc.getId()),
-				voc.getQuestion(),
-				voc.getAnswer(),
-				voc.getAnswerLang(),
-				voc.getQuestionLang(),
-				vocDetailService.findViewBy(user.getId(), voc.getId())
+	private TSVoc getVoc(User user, Word word) {
+		return new TSVoc(Long.toString(word.getId()),
+				word.getQuestion(),
+				word.getAnswer(),
+				word.getAnswerLang(),
+				word.getQuestionLang(),
+				vocDetailService.findViewBy(user.getId(), word.getId())
 						.map(vi -> vi.getViews().stream()
-								.map(view -> new TSVocView(view.timestamp(),
-										view.answer(),
-										view.correctness(),
-										view.classification().ordinal(),
-										view.mode().ordinal(),
-										view.answerDuration(),
-										view.reversed()))
+								.map(view -> new TSVocView(view.getTimestamp(),
+										view.getAnswer(),
+										view.getCorrectness(),
+										view.getClassification().ordinal(),
+										view.getMode().ordinal(),
+										view.getAnswerDuration(),
+										view.isReversed()))
 								.sorted((o1, o2) -> Long.compare(o2.timestamp, o1.timestamp))
 								.limit(5)
 								.toList())
@@ -137,18 +137,18 @@ public class APIController {
 	                             Principal principal,
 	                             @RequestBody TSLearnResult result) {
 		User user = userService.findByPrinciple(principal);
-		Voc voc = vocService.findByID(Long.parseLong(result.snowflake))
+		Word word = vocService.findByID(Long.parseLong(result.snowflake))
 				.orElseThrow();
 		
 		UserAgent ua = UserAgent.parseUserAgentString(userAgent);
 		
 		vocDetailService.insert(user.getId(),
 				Long.parseLong(result.snowflake()),
-				new VocView(result.timestamp(),
+				new WordView(result.timestamp(),
 						result.answer(),
 						PasswordService.damerauLevenshteinDistance(
 								result.answer,
-								result.reversed ? voc.getQuestion() : voc.getAnswer()),
+								result.reversed ? word.getQuestion() : word.getAnswer()),
 						AnswerClassification.values()[result.classification()],
 						result.responseTime(),
 						LearningMode.values()[result.mode()],

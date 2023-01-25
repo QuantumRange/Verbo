@@ -1,7 +1,7 @@
 package de.quantumrange.verbo.service;
 
 import de.quantumrange.verbo.model.User;
-import de.quantumrange.verbo.model.VocSet;
+import de.quantumrange.verbo.model.Vocabulary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,8 +50,8 @@ public class ControlService {
 		return user;
 	}
 	
-	public Stream<VocSet> getSets(User user,
-	                              Set<Long> set) {
+	public Stream<Vocabulary> getSets(User user,
+	                                  Set<Long> set) {
 		return set.stream()
 				.map(vocSetService::findByID)
 				.filter(Optional::isPresent)

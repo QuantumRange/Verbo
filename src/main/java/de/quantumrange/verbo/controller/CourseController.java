@@ -197,7 +197,7 @@ public class CourseController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow();
-		VocSet set = vocSetService.findByID(Identifiable.getId(setID))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(setID))
 				.orElseThrow();
 		
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";
@@ -217,7 +217,7 @@ public class CourseController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow();
-		VocSet set = vocSetService.findByID(Identifiable.getId(setID))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(setID))
 				.orElseThrow();
 		
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";

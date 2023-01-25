@@ -49,7 +49,7 @@ public class LearnController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.SET);
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow();
 		String[] modes = mode.split(" ");
 		

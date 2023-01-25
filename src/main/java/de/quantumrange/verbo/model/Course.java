@@ -4,41 +4,54 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Table;
 
-import java.util.Objects;
+import javax.persistence.*;
 import java.util.Set;
 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
+
+@Table(appliesTo = "course")
+@Entity(name = "course")
 public class Course implements Identifiable {
 	
+	@Id
+	@GenericGenerator(name = "id",
+			strategy = "de.quantumrange.verbo.model.generator.IdGenerator",
+			parameters = {@Parameter(name = "table", value = "course")})
+	@GeneratedValue(generator = "id")
 	private long id;
+	@Column(nullable = false)
 	private String name;
-	private Set<Long> users;
-	private Set<Long> sets;
+	
+	@ManyToMany
+	@JoinTable(name = "course_user",
+			joinColumns = @JoinColumn(name = "course_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private Set<User> users;
+	
+	@ManyToMany
+	@JoinTable(name = "course_set",
+			joinColumns = @JoinColumn(name = "course_id"),
+			inverseJoinColumns = @JoinColumn(name = "set_id"))
+	private Set<Set> sets;
 	
 	// For tests, etc.
+	@Column(nullable = false)
 	private String currentNote;
-	private Set<Long> currentSets;
+	
+	@ManyToMany
+	@JoinTable(name = "course_current_set",
+			joinColumns = @JoinColumn(name = "course_id"),
+			inverseJoinColumns = @JoinColumn(name = "set_id"))
+	private Set<Set> currentSets;
+	
+	@Column(nullable = false)
 	private String code;
 	
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Course course = (Course) o;
-		return getId() == course.getId();
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public long getId() {
-		return id;
-	}
 }

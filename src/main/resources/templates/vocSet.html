@@ -88,17 +88,17 @@
                 </thead>
                 <tbody>
 
-                <tr th:each="voc : ${vocabularies}">
-                    <td class="text-muted ts-visible-id" th:text="${voc.getVisibleId()}"></td>
-                    <td class="ts-question" th:text="${voc.getQuestion()}"></td>
-                    <td class="ts-answer" th:text="${voc.getAnswer()}"></td>
+                <tr th:each="word : ${vocabularies}">
+                    <td class="text-muted ts-visible-id" th:text="${word.getVisibleId()}"></td>
+                    <td class="ts-question" th:text="${word.getQuestion()}"></td>
+                    <td class="ts-answer" th:text="${word.getAnswer()}"></td>
                     <td>
                         <!-- I'm sorry -->
-                        <span th:class="'badge rounded-pill ' + ${progressReversed.getOrDefault(voc, 'text-bg-light')}">&#160;&#160;</span>
+                        <span th:class="'badge rounded-pill ' + ${progressReversed.getOrDefault(word, 'text-bg-light')}">&#160;&#160;</span>
                     </td>
                     <td>
                         <!-- I'm sorry -->
-                        <span th:class="'badge rounded-pill ' + ${progress.getOrDefault(voc, 'text-bg-light')}">&#160;&#160;</span>
+                        <span th:class="'badge rounded-pill ' + ${progress.getOrDefault(word, 'text-bg-light')}">&#160;&#160;</span>
                     </td>
                     <th>
                         <a class="ts-link-action-block ts-mark-action">

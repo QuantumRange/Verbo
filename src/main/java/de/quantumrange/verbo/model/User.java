@@ -5,69 +5,56 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Table;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serial;
+import javax.persistence.*;
 import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+
+@Table(appliesTo = "user")
+@Entity(name = "user")
 public class User implements UserDetails, Identifiable {
 	
-	@Serial
-	private static final long serialVersionUID = -8234328935424819142L;
 	private static final Logger log = LoggerFactory.getLogger(User.class);
 	
+	@Id
+	@GenericGenerator(name = "id",
+			strategy = "de.quantumrange.verbo.model.generator.IdGenerator",
+			parameters = {@Parameter(name = "table", value = "user")})
+	@GeneratedValue(generator = "id")
 	private long id;
+	
+	@Column(nullable = false, unique = true)
 	private String username;
+	
 	private String displayName;
+	
+	@Column(nullable = false)
 	private String password;
-	private Set<Long> marked;
-	private MetaData meta;
+	
+	@ManyToMany
+	@JoinTable(name = "user_marked", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "marked_id"))
+	private Set<Word> marked;
+	
+	@ElementCollection
+	@MapKeyColumn(name = "meta_key")
+	@Column(name = "meta_value")
+	@CollectionTable(name = "user_meta", joinColumns = @JoinColumn(name = "user_id"))
+	private Map<String, String> meta;
+	
+	@Enumerated(EnumType.STRING)
 	private Role role;
-	
-	public User(long id,
-	            String username,
-	            String displayName,
-	            String password,
-	            Role role) {
-		this.id = id;
-		this.username = username;
-		this.displayName = displayName;
-		this.password = password;
-		this.marked = new HashSet<>();
-		this.meta = new MetaData();
-		this.role = role;
-	}
-	
-	@JsonIgnore
-	public <T> T get(MetaKey<T> key) {
-		if (meta.containsKey(key)) {
-			try {
-				return (T) meta.get(key);
-			} catch (Exception e) {
-				log.warn("Can't cast value {} with key {}.", meta.get(key), key.getName());
-				return key.getDefaultValue();
-			}
-		}
-		return key.getDefaultValue();
-	}
-	
-	@JsonIgnore
-	public <T> void set(MetaKey<T> key, T value) {
-		meta.put(key, value);
-	}
-	
-	public boolean hasSet(VocSet set) {
-		return marked.contains(set.getId());
-	}
 	
 	public boolean hasPermission(Permission... permissions) {
 		for (Permission permission : permissions) {
@@ -110,19 +97,6 @@ public class User implements UserDetails, Identifiable {
 		grantedAuthorities.add(role.getGrantedAuthority());
 		
 		return grantedAuthorities;
-	}
-	
-	@Override
-	public boolean equals(@Nullable Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		User user = (User) o;
-		return getId() == user.getId();
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(getId());
 	}
 	
 }

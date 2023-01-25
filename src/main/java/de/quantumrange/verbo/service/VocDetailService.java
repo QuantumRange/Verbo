@@ -2,8 +2,8 @@ package de.quantumrange.verbo.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import de.quantumrange.verbo.model.VocInfo;
-import de.quantumrange.verbo.model.VocView;
+import de.quantumrange.verbo.model.WordInfo;
+import de.quantumrange.verbo.model.WordView;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class VocDetailService {
 	
 	private static final File folder = new File("./detail/");
 	
-	private final Map<Long, Map<Long, VocInfo>> data;
+	private final Map<Long, Map<Long, WordInfo>> data;
 	
 	public VocDetailService() {
 		this.data = new HashMap<>();
@@ -31,7 +31,7 @@ public class VocDetailService {
 		for (File file : folder.listFiles()) {
 			try {
 				long id = Long.parseLong(file.getName().replaceAll("[^\\d]", ""));
-				Map<String, VocInfo> temp = mapper.readerForMapOf(VocInfo.class)
+				Map<String, WordInfo> temp = mapper.readerForMapOf(WordInfo.class)
 						.readValue(new FileInputStream(file));
 				
 				this.data.put(id, new HashMap<>());
@@ -47,17 +47,17 @@ public class VocDetailService {
 		}
 	}
 	
-	public @NotNull Optional<VocInfo> findViewBy(long userID, long voc) {
+	public @NotNull Optional<WordInfo> findViewBy(long userID, long voc) {
 		return findViewBy(userID)
 				.map(map -> map.getOrDefault(voc, null));
 	}
 	
-	public @NotNull Optional<Map<Long, VocInfo>> findViewBy(long userID) {
+	public @NotNull Optional<Map<Long, WordInfo>> findViewBy(long userID) {
 		return Optional.ofNullable(data.getOrDefault(userID, null));
 	}
 	
 	public void update(long userID,
-	                   @NotNull VocInfo info) {
+	                   @NotNull WordInfo info) {
 		if (!data.containsKey(userID)) {
 			data.put(userID, new HashMap<>());
 		}
@@ -68,7 +68,7 @@ public class VocDetailService {
 	}
 	
 	public void insert(long userID,
-	                   @NotNull VocInfo info) {
+	                   @NotNull WordInfo info) {
 		if (!data.containsKey(userID)) {
 			data.put(userID, new HashMap<>());
 		}
@@ -80,13 +80,13 @@ public class VocDetailService {
 	
 	public void insert(long userID,
 	                   long vocID,
-	                   @NotNull VocView view) {
+	                   @NotNull WordView view) {
 		if (!data.containsKey(userID)) {
 			data.put(userID, new HashMap<>());
 		}
 		
 		if (!data.get(userID).containsKey(vocID)) {
-			data.get(userID).put(vocID, new VocInfo(vocID,
+			data.get(userID).put(vocID, new WordInfo(vocID,
 					0,
 					0,
 					new HashSet<>(),
@@ -99,7 +99,7 @@ public class VocDetailService {
 		save(userID);
 	}
 	
-	public Map<Long, Map<Long, VocInfo>> getData() {
+	public Map<Long, Map<Long, WordInfo>> getData() {
 		return data;
 	}
 	
@@ -107,7 +107,7 @@ public class VocDetailService {
 		JsonMapper mapper = new JsonMapper();
 		
 		try {
-			mapper.writerFor(new TypeReference<Map<Long, VocInfo>>() {
+			mapper.writerFor(new TypeReference<Map<Long, WordInfo>>() {
 					})
 					.writeValue(new File(folder, userID + ".json"), data.get(userID));
 		} catch (IOException e) {

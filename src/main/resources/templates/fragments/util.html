@@ -30,8 +30,8 @@
 
 <div th:fragment="cards(user, sets)">
 	<div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
-		<!--/*@thymesVar id="sets" type="java.util.Set<de.quantumrange.verbo.model.VocSet>"*/-->
-		<!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.VocSet"*/-->
+        <!--/*@thymesVar id="sets" type="java.util.Set<de.quantumrange.verbo.model.Vocabulary>"*/-->
+        <!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.Vocabulary"*/-->
 		<div th:each="cset : ${sets}" class="col">
 			<th:block th:replace="fragments/util :: card(user=${user},set=${cset})"></th:block>
 		</div>
@@ -39,7 +39,7 @@
 </div>
 
 <div th:fragment="card(user, set)">
-	<!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.VocSet"*/-->
+    <!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.Vocabulary"*/-->
 	<div class="card text-center m-2" th:classappend="${user.getMarked().contains(set.getId()) ? 'card-marked' : ''}">
 		<span hidden th:text="${set.getVisibleId()}"></span>
 		<div class="card-body">

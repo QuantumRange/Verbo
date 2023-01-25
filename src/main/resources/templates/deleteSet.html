@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Set</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <script th:src="@{/js/set.js}"></script>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h1 class="text-primary" th:text="${set.getName()}"></h1>
+            <p class="text-muted">
+                <i id="visibleID" th:text="${set.getVisibleId()}"></i>
+            </p>
+
+            <form method="post" action="deleteConfirm">
+                <button type="submit" class="btn btn-danger" id="text-btn">Perform Deletion</button>
+            </form>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

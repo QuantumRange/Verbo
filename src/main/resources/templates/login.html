@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Login</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+</head>
+
+<body>
+<nav class="navbar navbar-dark bg-body">
+    <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+            <span class="fa-solid fa-graduation-cap " aria-hidden="true"></span> <span
+                class="">Verbo</span>
+        </a>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="text-primary">Login</h1>
+    <p class="text-muted">If you don't have an account, you can <a class="text-info" th:href="@{register}">create</a>
+        one.</p>
+
+    <div th:if="${!username.isEmpty()}" class="alert alert-warning" role="alert">
+        <h2>Important!</h2>
+        Please remember your username and password.
+        After replacing invalid characters, your new username is: <br/><kbd th:text="${username}"></kbd><br/>
+        PLEASE REMEMBER THAT NAME!
+    </div>
+
+
+    <form action="/login" class="form-signin" method="post" autocomplete="off">
+        <div class="mb-3">
+            <label class="form-label" for="username">Username</label>
+            <input class="form-control" id="username" name="username" th:value="${username}" type="text">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <span class="fa-regular fa-eye pointerCursor col-sm-1" onclick="inputPassword('password')"></span>
+            <input class="form-control" id="password" th:value="${password}" name="password" type="password">
+        </div>
+        <!--		<div class="mb-3 form-check">-->
+        <!--			<input class="form-check-input" id="remember-me" name="remember-me" type="checkbox">-->
+        <!--			<label class="form-check-label" for="remember-me">Let me stay logged in for 30 days (Russian roulette active).</label>-->
+        <!--		</div>-->
+        <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Course</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h1>
+                <span th:text="${course.getName()}"></span>
+                <a sec:authorize="hasAnyAuthority('course:edit')" type="button"
+                   th:href="${'/course/' + course.getVisibleId() + '/edit'}" class="btn btn-outline-info">
+                    <span class="fa-solid fa-pen-to-square"></span>
+                    Edit
+                </a>
+            </h1>
+            <p class="text-muted" th:text="${course.getVisibleId()}"></p>
+
+            <th:block sec:authorize="hasAnyAuthority('course:view:invite_code')">
+                <h4>Course code: <span class="text-info" th:text="${course.getCode()}"></span></h4>
+            </th:block>
+
+            <br/><br/>
+
+            <th:block th:if="${!currentSets.isEmpty()}">
+
+                <h4 class="alert-heading">
+                    <span class="fa-solid fa-triangle-exclamation text-warning"></span>
+                    Tests, Exams and more
+                    <span class="fa-solid fa-triangle-exclamation text-warning"></span>
+                </h4>
+                <p class="text-muted">
+                    Here you can see sets, that are useful for tests or exams.
+                </p>
+                <hr class="col-7"/>
+                <h4 class="text-warning">
+                    <span class="fa-solid fa-exclamation"></span>
+                    <span th:text="${course.getCurrentNote()}"></span>
+                    <span class="fa-solid fa-exclamation"></span>
+                </h4>
+
+                <th:block th:replace="fragments/util :: cards(user=${user},sets=${currentSets})"></th:block>
+
+                <br/><br/><br/>
+            </th:block>
+
+            <hr class="col-12">
+
+            <h3>All sets</h3>
+            <th:block th:replace="fragments/util :: cards(user=${user},sets=${sets})"></th:block>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

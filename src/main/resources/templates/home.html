@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div th:replace="fragments/header :: header"></div>
+
+    <div class="container">
+        <h2>Hello <span th:text="${user.getDisplayName()}"></span>!</h2>
+        <!--	The next test is going to be on [Date], which is in [x] days.-->
+        <div class="alert alert-warning" role="alert">
+            As this is still a closed beta, bugs and other issues are to expected. For feature requests and bug reports,
+            please see the contact section in the footer.
+        </div>
+
+    </div>
+
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Import</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <section class="my-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <h2>Upload VocSet</h2>
+                            <form class="form" method="post" action="/set/import" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input type="file" name="file" class="form-control-file">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="langLeft" class="form-label">Language Left</label>
+                                    <select name="langLeft" id="langLeft" class="form-select">
+                                        <option th:each="lang : ${languages}" th:value="${lang.name()}"
+                                                th:text="${lang.name()}"></option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="langRight" class="form-label">Language Right</label>
+                                    <select name="langRight" id="langRight" class="form-select">
+                                        <option th:each="lang : ${languages}" th:value="${lang.name()}"
+                                                th:text="${lang.name()}"></option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

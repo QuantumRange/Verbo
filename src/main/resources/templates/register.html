@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Register</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <script th:src="@{/js/register.js}"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-dark bg-body">
+    <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1" href="/">
+            <span class="fa-solid fa-graduation-cap " aria-hidden="true"></span> <span
+                class="">Verbo</span>
+        </a>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form class="row g-3 needs-validation" novalidate id="registerForm">
+                <h2 class="text-primary">Register</h2>
+                <p class="text-muted">If a teacher or administrator has provided you with an invite code, you can use it
+                    to register.</p>
+                <input id="cart" name="cart" type="hidden" value="">
+
+                <div class="alert alert-danger" role="alert" id="infoAlert">
+                    <span id="infoMessage"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" for="username">Real name / Username</label>
+                    <p class="text-danger">
+                        Please enter your <b>real</b> name.
+                        <b>Only</b> the teachers can see it.
+                        You <b>cannot change</b> it.
+                    </p>
+                    <input class="form-control" id="username" name="username" required
+                           type="text">
+                    <div class="invalid-feedback">
+                        Please enter your name.
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" for="name">Display Name</label>
+                    <input class="form-control" id="name" name="name" required type="text">
+                    <div class="invalid-feedback">
+                        Please enter a name here that you would like to be seen by other students and users.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="password">Password</label>
+                    <span class="fa-regular fa-eye pointerCursor col-sm-1" onclick="inputPassword('password')"></span>
+                    <div class="col-sm-11">
+                        <input class="form-control" id="password" name="password" type="password">
+                    </div>
+
+                    <div class="invalid-feedback">
+                        Please enter a password of at least 10 characters. Upper/lower case and special characters are
+                        desirable.
+                    </div>
+                    <label class="form-label" for="repeatPassword">Repeat Password</label>
+                    <span class="fa-regular fa-eye pointerCursor col-sm-1"
+                          onclick="inputPassword('repeatPassword')"></span>
+                    <div class="col-sm-11">
+                        <input class="form-control" id="repeatPassword" name="password" type="password">
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="inviteCode">Invite Code</label>
+                    <input class="form-control" id="inviteCode" name="inviteCode"
+                           pattern="[A-Fa-f0-9]{4}-[A-Fa-f0-9]{2}-[A-Fa-f0-9]{4}" required type="text">
+                    <div class="invalid-feedback">
+                        Please make sure you haven't mistyped!
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-primary" type="submit">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

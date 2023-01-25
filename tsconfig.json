@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"lib": [
+			"es2016",
+			"es6",
+			"dom",
+			"es2020.bigint"
+		],
+		"module": "es6",
+		"target": "es6",
+		"noImplicitAny": true,
+		"preserveConstEnums": false,
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"incremental": true,
+		"baseUrl": "./",
+		"allowSyntheticDefaultImports": true,
+		"outDir": "src/main/resources/static/js/",
+		"sourceMap": false
+	},
+	"include": [
+		"src/main/ts/model/*",
+		"src/main/ts/util/*",
+		"src/main/ts/site/*"
+	],
+	"exclude": []
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Set</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <script type="module" th:src="@{/js/site/SetView.js}"></script>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h1 class="text-primary" th:text="${set.getName()}"></h1>
+            <p class="text-muted">
+                <i id="visibleID" th:text="${set.getVisibleId()}"></i>, created by
+                <b th:text="${creatorName}"></b> with
+                <b th:text="${set.getVocabularies().size()}"></b> words.
+            </p>
+            <div class="btn-group btn-group-lg" role="group" aria-label="Basic outlined example">
+                <a th:href="'/learn/' + ${set.getVisibleId()} + '?mode=card'" type="button"
+                   class="btn btn-info">Choice</a>
+                <a th:href="'/learn/' + ${set.getVisibleId()} + '?mode=text'" type="button"
+                   class="btn btn-info">Text</a>
+                <a th:href="'/learn/' + ${set.getVisibleId()} + '?mode=card+text'" type="button"
+                   class="btn btn-success">Full</a>
+            </div>
+
+            <br/><br/>
+
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-label="Learned"
+                     th:style="'width: ' + ${default_vLearned} + '%'" th:attr="aria-valuenow=${default_vLearned}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-label="Learning"
+                     th:style="'width: ' + ${default_vLearning} + '%'" th:attr="aria-valuenow=${default_vLearning}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-label="Unknown"
+                     th:style="'width: ' + ${default_vUnknown} + '%'" th:attr="aria-valuenow=${default_vUnknown}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="text-end">
+                <span th:text="${left.getName()}"></span>
+                <i class="fa-solid fa-arrow-right"></i>
+                <span th:text="${right.getName()}"></span>
+            </p>
+
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-label="Learned"
+                     th:style="'width: ' + ${reversed_vLearned} + '%'" th:attr="aria-valuenow=${reversed_vLearned}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-label="Learning"
+                     th:style="'width: ' + ${reversed_vLearning} + '%'" th:attr="aria-valuenow=${reversed_vLearning}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-label="Unknown"
+                     th:style="'width: ' + ${reversed_vUnknown} + '%'" th:attr="aria-valuenow=${reversed_vUnknown}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="text-end">
+                <span th:text="${right.getName()}"></span>
+                <i class="fa-solid fa-arrow-right"></i>
+                <span th:text="${left.getName()}"></span>
+            </p>
+
+            <hr>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" th:text="${left.getName()}"></th>
+                    <th scope="col" th:text="${right.getName()}"></th>
+                    <th scope="col">
+                <span href="#" data-bs-toggle="tooltip"
+                      th:attr="data-bs-title=${right.getName()} + ' -> ' + ${left.getName()}"><i
+                        class="fa-solid fa-circle-info"></i></span>
+                    </th>
+                    <th scope="col">
+                <span href="#" data-bs-toggle="tooltip"
+                      th:attr="data-bs-title=${left.getName()} + ' -> ' + ${right.getName()}"><i
+                        class="fa-solid fa-circle-info"></i></span>
+                    </th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="voc : ${vocabularies}">
+                    <td class="text-muted ts-visible-id" th:text="${voc.getVisibleId()}"></td>
+                    <td class="ts-question" th:text="${voc.getQuestion()}"></td>
+                    <td class="ts-answer" th:text="${voc.getAnswer()}"></td>
+                    <td>
+                        <!-- I'm sorry -->
+                        <span th:class="'badge rounded-pill ' + ${progressReversed.getOrDefault(voc, 'text-bg-light')}">&#160;&#160;</span>
+                    </td>
+                    <td>
+                        <!-- I'm sorry -->
+                        <span th:class="'badge rounded-pill ' + ${progress.getOrDefault(voc, 'text-bg-light')}">&#160;&#160;</span>
+                    </td>
+                    <th>
+                        <a class="ts-link-action-block ts-mark-action">
+                            <i class="fa-solid fa-highlighter"></i>
+                            Mark
+                        </a>
+                        &#160;&#160;
+                        <!--/*@thymesVar id="user" type="de.quantumrange.verbo.model.User"*/-->
+                        <a th:if="${user.getId() == set.getOwner()}" class="ts-link-action ts-edit-action text-warning">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            Edit
+                        </a>
+                        &#160;
+                        <a th:if="${user.getId() == set.getOwner()}"
+                           class="ts-link-action ts-delete-action text-danger">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </th>
+                </tr>
+                </tbody>
+            </table>
+
+            <form th:if="${user.getId() == set.getOwner()}" method="get" action="delete">
+                <button type="submit" class="btn btn-danger text-white" id="text-btn">Delete Set</button>
+            </form>
+
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Users</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+    <script th:src="@{/js/users.js}"></script>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <div class="alert alert-dark" role="alert">
+                <p>Want to invite more users to this website?
+                <p>
+                    <a type="button" class="btn btn-primary btn-lg" href="/users/invite">Generate invite code</a>
+
+                <hr th:if="${inviteCode}"/>
+                <h4 th:if="${inviteCode}">Invite code:</h4>
+                <h3 th:if="${inviteCode}" th:text="${inviteCode}"></h3>
+            </div>
+
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Nickname</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Words learned</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody id="user-table">
+                <tr th:each="user : ${users}">
+                    <th scope="row" th:text="${user.getVisibleId()}">1</th>
+                    <td th:text="${user.getUsername()}"></td>
+                    <td th:text="${user.getDisplayName()}"></td>
+                    <td>
+                        <div>
+                            <span th:class="${user.getRole().getStyle()}"></span>
+                            <span th:text="${user.getRole().getDisplayName()}"></span>
+                        </div>
+                        <select class="form-select">
+                            <option th:each="role : ${roles}" th:value="${role.name()}"
+                                    th:selected="${role.ordinal() == user.getRole().ordinal()}">
+                                <span th:text="${role.getDisplayName()}"></span>
+                            </option>
+                        </select>
+                    </td>
+                    <td th:text="${map.getOrDefault(user.getId(), 0)}"></td>
+                    <td>
+                        <a type="button" th:href="'/users/' + ${user.getVisibleId()} + '/reset'"
+                           class="btn btn-outline-danger">Reset Password</a>
+                    </td>
+                    <td>
+                        <a type="button" th:href="'/users/' + ${user.getVisibleId()} + '/delete'"
+                           class="btn btn-outline-primary">Delete Account</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

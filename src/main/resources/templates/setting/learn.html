@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Settings - Learning</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <script type="module" th:src="@{/js/site/LearnSettings.js}"></script>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h1>
+                Customize Your Learning Experience
+            </h1>
+            <p>
+                Welcome to our custom learning settings page! Here, you have the ability to adjust the parameters of our
+                algorithm to fit your individual learning style and goals. By adjusting these sliders, you can ensure
+                that your
+                learning experience is tailored to your needs and preferences.
+            </p>
+            <p>
+                By adjusting these sliders, you can ensure that your learning experience is tailored to your needs and
+                preferences. Give it a try and see how it improves your learning!
+            </p>
+
+            <div class="container">
+                <div class="row align-items-start">
+                    <div class="col">
+                        <div id="settings"></div>
+                    </div>
+                    <div class="col">
+                        <div id="preview">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

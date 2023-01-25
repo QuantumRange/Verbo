@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Sets</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h3>Marked sets</h3>
+            <hr class="col-12">
+            <th:block th:replace="fragments/util :: cards(user=${user},sets=${markedSets})"></th:block>
+
+            <br/>
+
+            <h3>Your sets</h3>
+            <hr class="col-12">
+            <th:block th:replace="fragments/util :: cards(user=${user},sets=${yourSets})"></th:block>
+
+            <br/>
+
+            <h3>All sets</h3>
+            <hr class="col-12">
+            <th:block th:replace="fragments/util :: cards(user=${user},sets=${sets})"></th:block>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

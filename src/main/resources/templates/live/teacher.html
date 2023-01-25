@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo Live</title>
+    <div th:replace="fragments/util :: libarys"></div>
+    <script th:src="@{/js/set.js}"></script>
+</head>
+<!--Note to future self: the teacher version of this page does *not* like being vertical, or generally having a low width.
+ It would be nice to fix this, but since this really isn't intended to be vertical anyway, I'll let it slide for now.
+ If this causes issues later, please fix it.-->
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+        <h1 class="text-lg-center text-primary">EEE-EEE</h1>
+        <h2 class="text-center">Ready? / [X] Words</h2>
+        <!-- TODO Change to Go once game is in progress and replace X with the current words in play -->
+        <div class="progress mx-5 my-3">
+            <!--TODO Change this dynamically based on how many people are ready and make it turn primary once everyone is ready -->
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-light" role="progressbar"
+                 aria-valuenow="75"
+                 aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+        </div>
+        <div class="d-grid container text-center gap-5">
+            <!-- 6 columns per row, 6 rows max -->
+            <!-- TODO If person is not fully loaded in yet, dynamically add div class text-light -->
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+                <div class="col">
+                    Student | Ping
+                </div>
+            </div>
+        </div>
+        <hr class="mb-4">
+        <div class="container flex-box align-items-center">
+            <form action="INSERT_ACTION" method="post">
+                <label for="code" class="form-label"><b>Amount of words</b></label>
+                <div class="row">
+                    <div class="col-4">
+                        <input type="text" name="name" class="form-control" id="???">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto py-lg-5">
+            <button type="button" class="btn btn-danger btn-lg">Delete Game</button>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

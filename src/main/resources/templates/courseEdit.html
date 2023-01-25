@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Course</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <h1>
+                <span th:text="${course.getName()}"></span>
+                <a type="button" th:href="${'/course/' + course.getVisibleId() + '/'}" class="btn btn-outline-info">
+                    <span class="fa-solid fa-eye"></span>
+                    View
+                </a>
+            </h1>
+            <p class="text-muted" th:text="${course.getVisibleId()}"></p>
+
+            <br/><br/>
+
+            <h3>Current tests, exams, ...</h3>
+            <hr class="col-7"/>
+            <form method="post" action="">
+                <div class="mb-3">
+                    <label for="selection" class="form-label"><b>Sets</b></label>
+                    <input type="text" id="selectionAll" th:value="${allSets}" hidden/>
+                    <input type="text" id="courseID" th:value="${course.getVisibleId()}" hidden/>
+                    <input type="text" name="selection" id="selection" th:value="${selectedSetsRaw}" hidden/>
+
+                    <div id="selector">
+                        <div class="autocomplete">
+                            <input type="text" id="selectorInput" class="form-control" placeholder="Search ..."/>
+                        </div>
+                        <p class="text-muted"><span class="fa-solid fa-info"></span> Click on sets to remove them</p>
+                        <div id="sets">
+                            <div th:replace="fragments/util :: cards(${user}, ${selectedSets})"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label"><b>Message</b></label>
+                    <input type="text" class="form-control" id="message" th:value="${course.getCurrentNote()}"
+                           name="message">
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

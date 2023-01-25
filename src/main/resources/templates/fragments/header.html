@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <title>Verbo</title>
+</head>
+
+<body>
+<div th:fragment="header">
+    <nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-body">
+        <div class="container">
+            <a class="navbar-brand mb-0 h1" href="/">
+                <span class="fa-solid fa-graduation-cap " aria-hidden="true"></span> <span
+                    class="">Verbo</span>
+            </a>
+            <button
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                    class="navbar-toggler"
+                    data-bs-target="#navbarNav"
+                    data-bs-toggle="collapse"
+                    type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse " id="navbarNav">
+                <ul class="nav navbar-nav">
+                    <li sec:authorize="hasAnyAuthority('site:home')" class="nav-item active">
+                        <a class="nav-link" href="/"
+                           th:classappend="${navbarSelector == 'home' ? 'active' : ''}">Home</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('site:today')" class="nav-item active">
+                        <a class="nav-link" href="/today" th:classappend="${navbarSelector == 'today' ? 'active' : ''}">Today</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('site:sets')" class="nav-item active">
+                        <a class="nav-link" href="/sets" th:classappend="${navbarSelector == 'sets' ? 'active' : ''}">Sets</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('site:courses')" class="nav-item active dropdown">
+                        <a class="nav-link dropdown-toggle" href="/courses"
+                           th:classappend="${navbarSelector == 'courses' ? 'active' : ''}"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">Courses</a>
+                        <ul class="dropdown-menu ">
+                            <li>
+                                <a class="dropdown-item" href="/courses">All Courses</a>
+                            </li>
+
+                            <!--/*@thymesVar id="courses" type="java.util.List<de.quantumrange.verbo.model.Course>"*/-->
+                            <!--/*@thymesVar id="course" type="de.quantumrange.verbo.model.Course"*/-->
+                            <li th:each="course : ${courses}">
+                                <a class="dropdown-item"
+                                   th:href="${'/course/' + course.getVisibleId() + '/'}"
+                                   th:text="${course.getName()}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('site:live')" class="nav-item active">
+                        <a class="nav-link" href="/live" th:classappend="${navbarSelector == 'live' ? 'active' : ''}">Live</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('site:users')" class="nav-item active">
+                        <a class="nav-link" href="/users" th:classappend="${navbarSelector == 'users' ? 'active' : ''}">Users</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <br/><br/><br/>
+
+</div>
+
+<div class="footer" th:fragment="footer">
+    <br/>
+    <hr class="mb-4">
+    <footer class="text-white pt-5 pb-4">
+        <div class="container text-center text-md-start">
+            <div class="row text-center text-md-start">
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                    <h5 class="text-uppercase mb-4 text-primary">Legal</h5>
+                    <p><a href="https://youtu.be/FM2MpMbV0rw"> Privacy</a>
+                    </p>
+                    <p><a href="https://youtu.be/HwF229U2ba8"> About</a></p>
+                    <p><a href="https://youtu.be/MiqoA-yF-0M"> TOS</a></p>
+                </div>
+
+                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+
+                    <h5 class="text-uppercase mb-4 text-primary">Manage</h5>
+                    <ul class="list-unstyled">
+                        <li sec:authorize="hasAnyAuthority('site:my')">
+                            <a href="/myAccount" th:classappend="${navbarSelector == 'my' ? 'active' : ''}">
+                                <span class="fa-solid fa-user" aria-hidden="true"></span> My Account</a>
+                        </li>
+                        <li>
+                            <a href="/logout">
+                                <span class="fa-solid fa-right-from-bracket" aria-hidden="true"></span> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mt-4">
+                    <h5 class="text-uppercase mb-4 text-primary">Contact</h5>
+
+                    <ul class="list-unstyled">
+                        <li>Discord: <b>QuantumRange#0354</b></li>
+                        <li>
+                            <a class=""
+                               href="mailto:quizly@mailbox.org">quizly@mailbox.org</a>
+                        </li>
+                        <li>
+                            <a href="https://forms.gle/5vq89TxzXqeBFyDe7"
+                               target="_blank">
+                                <span class="fa-solid fa-bug" aria-hidden="true"></span> Bug Reports
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <input th:if="${hash}" id="prefHash" hidden th:value="${hash}"/>
+</div>
+</body>
+</html>

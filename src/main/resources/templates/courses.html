@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verbo - Courses</title>
+
+    <div th:replace="fragments/util :: libarys"></div>
+    <link rel="stylesheet" th:href="@{/css/home.css}"/>
+</head>
+
+<body>
+<div class="page-container">
+    <div class="content-wrap">
+        <div th:replace="fragments/header :: header"></div>
+
+        <div class="container">
+            <div sec:authorize="hasAnyAuthority('course:create')">
+                <div class="alert alert-dark" role="alert">
+                    <h4 class="alert-heading">Create Course</h4>
+                    <hr>
+
+                    <form action="course/create" method="post">
+                        <label for="code" class="form-label"><b>Course name:</b></label>
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="text" name="name" class="form-control" id="name"
+                                       aria-describedby="textHelp">
+                            </div>
+                            <div class="col-4">
+                                <button type="submit" class="btn btn-primary">Create</button>
+                            </div>
+                        </div>
+                        <div id="textHelp" class="form-text">Example: 'BGT-20-b-SPA'</div>
+                    </form>
+
+                    <br th:if="${errorCreate}"/>
+                    <div th:if="${errorCreate}" class="alert alert-danger" role="alert">
+                        Name invalid!
+                    </div>
+                </div>
+            </div>
+
+            <div sec:authorize="hasAnyAuthority('course:join')">
+                <div class="alert alert-dark" role="alert">
+                    <h4 class="alert-heading">Join Course</h4>
+                    <hr>
+
+                    <div th:if="${errorJoin}" class="alert alert-danger" role="alert">
+                        This course is not available.
+                    </div>
+
+                    <form action="course/join" method="post">
+                        <label for="code" class="form-label"><b>Course Code:</b></label>
+                        <div class="row">
+                            <div class="col-4">
+                                <!-- 2,251,875,390,625 combinations, try to crack this :3 -->
+                                <input type="text" name="code" class="form-control" pattern="[A-Z0-9]{4}\-[A-Z0-9]{4}"
+                                       id="code">
+                            </div>
+                            <div class="col-4">
+                                <button type="submit" class="btn btn-primary">Join</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h3 th:text="${all ? 'All courses' : 'Your courses'}"></h3>
+            <h5 sec:authorize="hasAnyAuthority('course:view:all')" class="text-muted">
+                <a th:href="${'/courses?all=' + (!all)}"
+                   th:text="${all ? 'Switch to your courses' : 'Switch to all courses'}"></a>
+            </h5>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Users</th>
+                    <th scope="col">#</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="list : ${list}">
+                    <th scope="row" th:text="${list.getVisibleId()}">1</th>
+                    <td th:text="${list.getName()}"></td>
+                    <td th:text="${list.getUsers().size()}"></td>
+                    <th><a th:href="${'course/' + list.getVisibleId() + '/'}">Open</a></th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: footer"></div>
+</div>
+</body>
+</html>

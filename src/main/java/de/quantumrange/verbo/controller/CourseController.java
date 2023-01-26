@@ -43,7 +43,7 @@ public class CourseController {
 	                      Model model,
 	                      @RequestParam(name = "error", defaultValue = "-1") int code,
 	                      @RequestParam(name = "all", defaultValue = "") String showAll) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
@@ -126,7 +126,7 @@ public class CourseController {
 	public String course(Principal principal,
 	                     Model model,
 	                     @PathVariable(name = "id") String id) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
 		Course course = courseService.findByID(Identifiable.getId(id))
@@ -136,9 +136,9 @@ public class CourseController {
 		
 		model.addAttribute("user", user);
 		model.addAttribute("course", course);
-		model.addAttribute("sets", controlService.getSets(user, course.getSets())
+		model.addAttribute("sets", controlService.getSets(user, course.getVocabularies())
 				.toList());
-		model.addAttribute("currentSets", controlService.getSets(user, course.getCurrentSets())
+		model.addAttribute("currentSets", controlService.getSets(user, course.getWordSetInTest())
 				.toList());
 		
 		return "course";
@@ -149,7 +149,7 @@ public class CourseController {
 	public String edit(Principal principal,
 	                   Model model,
 	                   @PathVariable(name = "id") String id) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Illegal course"));
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";
@@ -160,11 +160,11 @@ public class CourseController {
 		model.addAttribute("user", user);
 		model.addAttribute("course", course);
 		model.addAttribute("selectedSetsRaw", vocSetService.stream()
-				.filter(v -> course.getCurrentSets().contains(v.getId()))
+				.filter(v -> course.getWordSetInTest().contains(v.getId()))
 				.map(v -> v.getName().replaceAll("[~@]", "") + "~" + v.getVisibleId())
 				.collect(Collectors.joining("@")));
 		model.addAttribute("selectedSets", vocSetService.stream()
-				.filter(v -> course.getCurrentSets().contains(v.getId()))
+				.filter(v -> course.getWordSetInTest().contains(v.getId()))
 				.collect(Collectors.toList()));
 		
 		return "courseEdit";
@@ -177,7 +177,7 @@ public class CourseController {
 	                   Model model,
 	                   @PathVariable(name = "id") String id,
 	                   @RequestParam(name = "message") String message) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Illegal course"));
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";
@@ -194,15 +194,15 @@ public class CourseController {
 	                     Model model,
 	                     @PathVariable(name = "id") String id,
 	                     @RequestBody String setID) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow();
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(setID))
+		WordSet set = vocSetService.findByID(Identifiable.getId(setID))
 				.orElseThrow();
 		
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";
 		
-		course.getCurrentSets().add(set.getId());
+		course.getWordSetInTest().add(set.getId());
 		courseService.update(course);
 		
 		return edit(principal, model, id);
@@ -214,15 +214,15 @@ public class CourseController {
 	                        Model model,
 	                        @PathVariable(name = "id") String id,
 	                        @RequestBody String setID) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.COURSES);
 		Course course = courseService.findByID(Identifiable.getId(id))
 				.orElseThrow();
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(setID))
+		WordSet set = vocSetService.findByID(Identifiable.getId(setID))
 				.orElseThrow();
 		
 		if (!course.getUsers().contains(user.getId())) return "redirect:/home";
 		
-		course.getCurrentSets().remove(set.getId());
+		course.getWordSetInTest().remove(set.getId());
 		courseService.update(course);
 		
 		return edit(principal, model, id);

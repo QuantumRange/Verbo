@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,10 +47,10 @@ public class LearnController {
 	                     Model model,
 	                     @PathVariable String id,
 	                     @RequestParam(value = "mode", defaultValue = "text") String mode) throws IOException {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.SET);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.SET);
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
+		WordSet set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow();
 		String[] modes = mode.split(" ");
 		

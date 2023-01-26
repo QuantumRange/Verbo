@@ -1,14 +1,12 @@
 package de.quantumrange.verbo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Table;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,7 +35,8 @@ public class User implements UserDetails, Identifiable {
 	
 	@Column(nullable = false, unique = true)
 	private String username;
-	
+
+	@Column(nullable = false)
 	private String displayName;
 	
 	@Column(nullable = false)
@@ -98,5 +97,37 @@ public class User implements UserDetails, Identifiable {
 		
 		return grantedAuthorities;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		int result = (int) (getId() ^ (getId() >>> 32));
+
+		result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
+		result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
+		result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
+		result = 31 * result + (getMarked() != null ? getMarked().hashCode() : 0);
+		result = 31 * result + (getMeta() != null ? getMeta().hashCode() : 0);
+		result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
+
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		User user = (User) o;
+
+		return getId() == user.getId();
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", role=" + role +
+				'}';
+	}
 }

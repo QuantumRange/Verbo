@@ -1,6 +1,5 @@
 package de.quantumrange.verbo.controller;
 
-import de.quantumrange.verbo.model.MetaKey;
 import de.quantumrange.verbo.model.Role;
 import de.quantumrange.verbo.model.User;
 import de.quantumrange.verbo.service.*;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,7 +28,7 @@ public class HomeController {
 	private final VocService vocController;
 	private final CourseService courseController;
 	private final ControlService controlService;
-	private final PasswordService passwordService;
+	private final CommonPasswordDetectionService commonPasswordDetectionService;
 	
 	@Value("${autoLogin}")
 	private boolean autoLogin;
@@ -36,7 +36,7 @@ public class HomeController {
 	@Autowired
 	public HomeController(UserService userService, InviteService inviteService, PasswordEncoder passwordEncoder,
 	                      VocSetService vocSetController, VocService vocController, CourseService courseController,
-	                      ControlService controlService, PasswordService passwordService) {
+	                      ControlService controlService, CommonPasswordDetectionService commonPasswordDetectionService) {
 		this.userService = userService;
 		this.inviteService = inviteService;
 		this.passwordEncoder = passwordEncoder;
@@ -44,7 +44,7 @@ public class HomeController {
 		this.vocController = vocController;
 		this.courseController = courseController;
 		this.controlService = controlService;
-		this.passwordService = passwordService;
+		this.commonPasswordDetectionService = commonPasswordDetectionService;
 	}
 	
 	private static String formatting(String str) {
@@ -54,7 +54,7 @@ public class HomeController {
 	@GetMapping("sets")
 	public String sets(Principal principal,
 	                   Model model) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.SET);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.SET);
 		
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
@@ -73,7 +73,7 @@ public class HomeController {
 	@GetMapping("live")
 	public String live(Principal principal,
 	                   Model model) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.LIVE);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.LIVE);
 		
 		return "live/student";
 	}
@@ -82,7 +82,7 @@ public class HomeController {
 	@PreAuthorize("hasAnyAuthority('site:home')")
 	public String home(Principal principal,
 	                   Model model) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.HOME);
+		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.HOME);
 		
 		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
 		
@@ -141,7 +141,7 @@ public class HomeController {
 		if (!pw.equals(pwRepeat))
 			return ".-. Passwords must match";
 		
-		if (passwordService.isUsedPassword(pw))
+		if (commonPasswordDetectionService.isUsedPassword(pw))
 			return "This is one of the top 10000 most used passwords. Please educate yourself on how to create a secure password and come back later. (Oh and don't reuse passwords across websites. I'm serious. That's dangerous.)";
 		
 		if (pw.length() <= 6)

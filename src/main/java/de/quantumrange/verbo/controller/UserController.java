@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class UserController {
@@ -23,24 +24,24 @@ public class UserController {
 	private final InviteService inviteService;
 	private final VocDetailService vocDetailService;
 	private final PasswordEncoder passwordEncoder;
-	private final PasswordService passwordService;
+	private final CommonPasswordDetectionService commonPasswordDetectionService;
 	
 	@Autowired
 	public UserController(ControlService controlService, UserService userService, InviteService inviteService,
-	                      VocDetailService vocDetailService, PasswordEncoder passwordEncoder, PasswordService passwordService) {
+	                      VocDetailService vocDetailService, PasswordEncoder passwordEncoder, CommonPasswordDetectionService commonPasswordDetectionService) {
 		this.controlService = controlService;
 		this.userService = userService;
 		this.inviteService = inviteService;
 		this.vocDetailService = vocDetailService;
 		this.passwordEncoder = passwordEncoder;
-		this.passwordService = passwordService;
+		this.commonPasswordDetectionService = commonPasswordDetectionService;
 	}
 	
 	@GetMapping("myAccount")
 	@PreAuthorize("hasAnyAuthority('site:my')")
 	public String home(Principal principal,
 	                   Model model) {
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USER);
 		
 		if (u.get(MetaKey.FORCE_PASSWORD_CHANGE)) {
 			if (!model.containsAttribute("error")) {
@@ -61,7 +62,7 @@ public class UserController {
 	public String nickname(Principal principal,
 	                       Model model,
 	                       @RequestParam("nickname") String nickname) {
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USER);
 		
 		nickname = nickname.replaceAll("[^a-zA-Z0-9 _áéíúóñÁÉÍÚÓÑ]", "");
 		
@@ -85,12 +86,12 @@ public class UserController {
 	                       Model model,
 	                       @RequestParam("pw") String pw,
 	                       @RequestParam("pwRepeat") String pwRepeat) {
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USER);
 		
 		if (!pw.equals(pwRepeat))
 			model.addAttribute("error", ".-. Passwords must match");
 		
-		if (passwordService.isUsedPassword(pw))
+		if (commonPasswordDetectionService.isUsedPassword(pw))
 			model.addAttribute("error",
 					"This is one of the top 10000 most used passwords. Please educate yourself on how to create a secure password and come back later. (Oh and don't reuse passwords across websites. I'm serious. That's dangerous.)");
 		

@@ -1,18 +1,14 @@
 package de.quantumrange.verbo.model;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public enum AnswerClassification {
 	
-	WRONG(false),
-	RIGHT(true),
-	MARKED_AS_RIGHT(true);
-	
-	private final boolean correct;
-	
-	AnswerClassification(boolean correct) {
-		this.correct = correct;
-	}
+	WRONG, RIGHT, MARKED_AS_RIGHT;
 	
 	public boolean isCorrect() {
-		return correct;
+		return this != WRONG;
 	}
+
 }

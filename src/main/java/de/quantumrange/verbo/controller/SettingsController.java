@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("setting")
@@ -23,7 +24,7 @@ public class SettingsController {
 	
 	@GetMapping("/learn")
 	public String learn(Principal principal, Model model) {
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USER);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USER);
 		
 		return "setting/learn";
 	}

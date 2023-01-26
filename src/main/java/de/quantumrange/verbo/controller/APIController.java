@@ -40,7 +40,7 @@ public class APIController {
 	public boolean mark(Principal principal,
 	                    @RequestParam(name = "id") String id) {
 		User user = userService.findByPrinciple(principal);
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
+		WordSet set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
 		if (user.getMarked().contains(set.getId())) {
@@ -59,7 +59,7 @@ public class APIController {
 	public TSVocSet requestSet(Principal principal,
 	                           @RequestBody String id) {
 		User user = userService.findByPrinciple(principal);
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(id))
+		WordSet set = vocSetService.findByID(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
 		TSVocSet tsSet = new TSVocSet(Long.toString(set.getId()),
@@ -93,7 +93,7 @@ public class APIController {
 	public boolean requestVocDelete(Principal principal,
 	                                @RequestBody Map<String, String> data) {
 		User user = userService.findByPrinciple(principal);
-		Vocabulary set = vocSetService.findByID(Identifiable.getId(data.get("set")))
+		WordSet set = vocSetService.findByID(Identifiable.getId(data.get("set")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid set ID!"));
 		Word word = vocService.findByID(Identifiable.getId(data.get("voc")))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid voc ID!"));
@@ -146,7 +146,7 @@ public class APIController {
 				Long.parseLong(result.snowflake()),
 				new WordView(result.timestamp(),
 						result.answer(),
-						PasswordService.damerauLevenshteinDistance(
+						CommonPasswordDetectionService.damerauLevenshteinDistance(
 								result.answer,
 								result.reversed ? word.getQuestion() : word.getAnswer()),
 						AnswerClassification.values()[result.classification()],

@@ -18,7 +18,7 @@
             <p class="text-muted">
                 <i id="visibleID" th:text="${set.getVisibleId()}"></i>, created by
                 <b th:text="${creatorName}"></b> with
-                <b th:text="${set.getVocabularies().size()}"></b> words.
+                <b th:text="${set.getWords().size()}"></b> words.
             </p>
             <div class="btn-group btn-group-lg" role="group" aria-label="Basic outlined example">
                 <a th:href="'/learn/' + ${set.getVisibleId()} + '?mode=card'" type="button"
@@ -70,7 +70,6 @@
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
                     <th scope="col" th:text="${left.getName()}"></th>
                     <th scope="col" th:text="${right.getName()}"></th>
                     <th scope="col">
@@ -88,8 +87,7 @@
                 </thead>
                 <tbody>
 
-                <tr th:each="word : ${vocabularies}">
-                    <td class="text-muted ts-visible-id" th:text="${word.getVisibleId()}"></td>
+                <tr th:each="word : ${words}">
                     <td class="ts-question" th:text="${word.getQuestion()}"></td>
                     <td class="ts-answer" th:text="${word.getAnswer()}"></td>
                     <td>
@@ -107,12 +105,12 @@
                         </a>
                         &#160;&#160;
                         <!--/*@thymesVar id="user" type="de.quantumrange.verbo.model.User"*/-->
-                        <a th:if="${user.getId() == set.getOwner()}" class="ts-link-action ts-edit-action text-warning">
+                        <a th:if="${set.canEdit(user)}" class="ts-link-action ts-edit-action text-warning">
                             <i class="fa-solid fa-pen-to-square"></i>
                             Edit
                         </a>
                         &#160;
-                        <a th:if="${user.getId() == set.getOwner()}"
+                        <a th:if="${set.canEdit(user)}"
                            class="ts-link-action ts-delete-action text-danger">
                             <i class="fa-solid fa-trash"></i>
                         </a>

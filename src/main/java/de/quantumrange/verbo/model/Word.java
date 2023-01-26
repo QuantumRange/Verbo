@@ -1,8 +1,6 @@
 package de.quantumrange.verbo.model;
 
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
@@ -24,7 +22,7 @@ public class Word implements Identifiable {
 	
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
-	private Vocabulary owner;
+	private WordSet owner;
 	
 	@Column(nullable = false)
 	private String question;

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 @Controller
@@ -42,7 +43,7 @@ public class UsersController {
 	@PreAuthorize("hasAnyAuthority('site:users')")
 	public String home(Principal principal,
 	                   Model model) {
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
 		
 		model.addAttribute("users", userService.stream()
 				.sorted((o1, o2) -> {
@@ -101,7 +102,7 @@ public class UsersController {
 	                            @PathVariable String user,
 	                            Model model) {
 		
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
 		User other = userService.findByID(Identifiable.getId(user))
 				.orElseThrow();
 		
@@ -122,7 +123,7 @@ public class UsersController {
 	                         @PathVariable String user,
 	                         Model model) {
 		
-		User u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
+		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
 		User other = userService.findByID(Identifiable.getId(user))
 				.orElseThrow();
 		
@@ -141,7 +142,7 @@ public class UsersController {
 	public String resetPasswordConfirm(Principal principal,
 	                                   Model model,
 	                                   @PathVariable String user) {
-		User c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
+		Optional<User> c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
 		User other = userService.findByID(Identifiable.getId(user))
 				.orElseThrow();
 		
@@ -170,7 +171,7 @@ public class UsersController {
 	public String resetPassword(Principal principal,
 	                            Model model,
 	                            @PathVariable String user) {
-		User c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
+		Optional<User> c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
 		User other = userService.findByID(Identifiable.getId(user))
 				.orElseThrow();
 		

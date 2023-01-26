@@ -34,12 +34,12 @@ public class Course implements Identifiable {
 			joinColumns = @JoinColumn(name = "course_id"),
 			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> users;
-	
+
 	@ManyToMany
-	@JoinTable(name = "course_set",
+	@JoinTable(name = "course_vocabularies",
 			joinColumns = @JoinColumn(name = "course_id"),
 			inverseJoinColumns = @JoinColumn(name = "set_id"))
-	private Set<Set> sets;
+	private Set<WordSet> vocabularies;
 	
 	// For tests, etc.
 	@Column(nullable = false)
@@ -49,7 +49,7 @@ public class Course implements Identifiable {
 	@JoinTable(name = "course_current_set",
 			joinColumns = @JoinColumn(name = "course_id"),
 			inverseJoinColumns = @JoinColumn(name = "set_id"))
-	private Set<Set> currentSets;
+	private Set<WordSet> wordSetInTest;
 	
 	@Column(nullable = false)
 	private String code;

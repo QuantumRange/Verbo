@@ -16,46 +16,73 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode
 
-@Table(appliesTo = "vocabulary")
-@Entity(name = "vocabulary")
-public class Vocabulary implements Identifiable {
-	
+@Table(appliesTo = "word_set")
+@Entity(name = "word_set")
+public class WordSet implements Identifiable {
+
 	// TODO: Config with custom format type
 	public static final DateTimeFormatter SAVE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 	private static final DateTimeFormatter GERMAN_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 	private static final DateTimeFormatter SIMPLE_GERMAN_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
 	@Id
 	@GenericGenerator(name = "id",
 			strategy = "de.quantumrange.verbo.model.generator.IdGenerator",
 			parameters = {@org.hibernate.annotations.Parameter(name = "table", value = "vocabulary")})
 	@GeneratedValue(generator = "id")
 	private long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
 	private User owner;
-	
+
+	@ManyToMany
+	@JoinTable(name = "editor_word_set",
+			joinColumns = @JoinColumn(name = "set_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private Set<User> editors;
+
+	@Enumerated(EnumType.STRING)
+	private Language question;
+
+	@Enumerated(EnumType.STRING)
+	private Language answer;
+
+	@Enumerated(EnumType.ORDINAL)
+	private EditPolicy editPolicy;
+
 	@Column(nullable = false)
 	private LocalDateTime timestamp;
-	
-	@OneToMany(mappedBy = "owner_id")
+
+	@OneToMany(mappedBy = "owner")
 	private Set<Word> words;
-	
-	
+
+
+	public boolean canEdit(User user) {
+		return editors.contains(user) || owner.equals(user);
+	}
+
 	// Thymeleaf usages
 	@Deprecated(forRemoval = true)
 	@JsonIgnore
 	public String getOwnerStr() {
 		return Identifiable.getVisibleId(owner.getId());
 	}
-	
+
 	@Deprecated(forRemoval = true)
 	@JsonIgnore
 	public String getTimestampStr() {
 		return SIMPLE_GERMAN_FORMAT.format(timestamp);
 	}
-	
+
+	@Override
+	public String toString() {
+		return "WordSet{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				'}';
+	}
 }

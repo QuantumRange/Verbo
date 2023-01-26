@@ -10,7 +10,6 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 
 @Table(appliesTo = "view")
 @Entity(name = "view")
@@ -20,10 +19,14 @@ public final class WordView {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, updatable = false)
 	private long id;
-	
-	@OneToMany
+
+	@ManyToOne
+	@JoinColumn(name = "word_id", nullable = false)
+	private Word word;
+
+	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
-	private Word owner;
+	private User owner;
 	
 	@Column(nullable = false)
 	private long timestamp;
@@ -45,5 +48,5 @@ public final class WordView {
 	
 	@Column(nullable = false)
 	private boolean reversed;
-	
+
 }

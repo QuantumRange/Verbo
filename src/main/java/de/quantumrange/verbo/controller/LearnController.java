@@ -2,9 +2,9 @@ package de.quantumrange.verbo.controller;
 
 import de.quantumrange.verbo.model.*;
 import de.quantumrange.verbo.service.ControlService;
-import de.quantumrange.verbo.service.UserService;
-import de.quantumrange.verbo.service.VocService;
-import de.quantumrange.verbo.service.VocSetService;
+import de.quantumrange.verbo.service.repos.UserRepository;
+import de.quantumrange.verbo.service.repos.WordRepository;
+import de.quantumrange.verbo.service.repos.WordSetRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,59 +22,52 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("learn")
 public class LearnController {
-
-	public static final int MAX_SESSION_SIZE = 6;
-
-	private final VocSetService vocSetService;
-	private final UserService userService;
-	private final VocService vocService;
+	
+	private final WordSetRepository wordSetRepository;
 	private final ControlService controlService;
-
-	public LearnController(VocSetService vocSetService,
-						   UserService userService,
-						   VocService vocService,
-						   ControlService controlService) {
-		this.vocSetService = vocSetService;
-		this.userService = userService;
-		this.vocService = vocService;
+	
+	public LearnController(WordSetRepository wordSetRepository,
+	                       ControlService controlService) {
+		this.wordSetRepository = wordSetRepository;
 		this.controlService = controlService;
 	}
-
+	
 	@GetMapping("{id}")
 	@PreAuthorize("hasAnyAuthority('site:learn')")
 	public String create(Principal principal,
-						 Model model,
-						 @PathVariable String id,
-						 @RequestParam(value = "mode", defaultValue = "text") String mode) throws IOException {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.SET);
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
-
-		VocSet set = vocSetService.findByID(Identifiable.getId(id))
+	                     Model model,
+	                     @PathVariable String id,
+	                     @RequestParam(value = "mode", defaultValue = "text") String mode) throws IOException {
+		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
+				.orElseThrow();
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
+		
+		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
 				.orElseThrow();
 		String[] modes = mode.split(" ");
-
+		
 		Set<LearningMode> types = new HashSet<>();
-
+		
 		for (String s : modes) {
 			LearningMode type = null;
-
+			
 			for (LearningMode value : LearningMode.values()) {
 				if (value.name().equalsIgnoreCase(s)) {
 					type = value;
 					break;
 				}
 			}
-
+			
 			if (type != null) types.add(type);
 		}
-
+		
 		model.addAttribute("set", set.getVisibleId());
 		model.addAttribute("options", types.stream()
 				.map(Enum::ordinal)
 				.map(i -> Integer.toString(i))
 				.collect(Collectors.joining(";")));
-
+		
 		return "learn";
 	}
-
+	
 }

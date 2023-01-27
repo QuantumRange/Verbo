@@ -1,6 +1,6 @@
 package de.quantumrange.verbo.config;
 
-import de.quantumrange.verbo.service.UserService;
+import de.quantumrange.verbo.service.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,18 +9,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 class UserAuthService implements UserDetailsService {
-
-	private final UserService userService;
-
+	
+	private final UserRepository userRepository;
+	
 	@Autowired
-	public UserAuthService(UserService userService) {
-		this.userService = userService;
+	public UserAuthService(UserRepository userRepository) {
+		this.userRepository = userRepository;
 	}
-
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userService.findByUsername(username)
+		return userRepository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("The Username %s not found.".formatted(username)));
 	}
-
+	
 }

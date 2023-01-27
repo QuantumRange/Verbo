@@ -30,20 +30,6 @@ public class CommonPasswordDetectionService {
 		}
 	}
 
-	// TODO: Relocate
-	@Deprecated(forRemoval = true)
-	public String generateCode() {
-		char[] allowed = "0123456789ABDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-		StringBuilder builder = new StringBuilder();
-
-		for (int i = 0; i < 9; i++) {
-			if (i == 4) builder.append('-');
-			else builder.append(allowed[new Random().nextInt(allowed.length)]);
-		}
-
-		return builder.toString();
-	}
-
 	public static int damerauLevenshteinDistance(@NotNull String str1, @NotNull String str2) {
 		int[][] substitutionMatrix = new int[str2.length() + 1][str1.length() + 1];
 

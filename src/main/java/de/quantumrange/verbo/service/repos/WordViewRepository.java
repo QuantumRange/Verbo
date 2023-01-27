@@ -32,12 +32,4 @@ public interface WordViewRepository extends JpaRepository<WordView, Long> {
 		return countLearning(wordId, userId, reversed) != 0L;
 	}
 
-	default boolean isGlobalLearned(long setId, long userId, boolean reversed) {
-		return countGlobalLearned(setId, setId, reversed, LearningMode.TEXT, AnswerClassification.WRONG) >= 2;
-	}
-
-	default boolean isGlobalLearning(long setId, long userId, boolean reversed) {
-		return countGlobalLearning(setId, userId, reversed) != 0L;
-	}
-
 }

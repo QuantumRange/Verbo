@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 
 @Table(appliesTo = "word")
 @Entity(name = "word")
@@ -17,7 +16,7 @@ public class Word implements Identifiable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", unique = true, updatable = false)
+	@Column(unique = true, updatable = false)
 	private long id;
 	
 	@ManyToOne

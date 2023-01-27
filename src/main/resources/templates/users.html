@@ -33,7 +33,6 @@
                     <th scope="col">Username</th>
                     <th scope="col">Nickname</th>
                     <th scope="col">Role</th>
-                    <th scope="col">Words learned</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                 </tr>
@@ -55,7 +54,6 @@
                             </option>
                         </select>
                     </td>
-                    <td th:text="${map.getOrDefault(user.getId(), 0)}"></td>
                     <td>
                         <a type="button" th:href="'/users/' + ${user.getVisibleId()} + '/reset'"
                            class="btn btn-outline-danger">Reset Password</a>

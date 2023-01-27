@@ -23,8 +23,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static de.quantumrange.verbo.model.WordSet.SAVE_FORMAT;
-
 @Controller
 @RequestMapping("set")
 public class VocSetController {
@@ -63,7 +61,7 @@ public class VocSetController {
 
 		long wordId = Identifiable.getId(wordIdStr);
 
-		log.info("{} deleted in {} the word {}", user, set, wordRepository.getById(wordId));
+		log.warn("{} deleted in {} the word {}", user, set, wordRepository.getById(wordId));
 		wordRepository.deleteById(wordId);
 
 		return true;
@@ -71,7 +69,7 @@ public class VocSetController {
 
 	@GetMapping("{id}")
 	@PreAuthorize("hasAnyAuthority('site:set')")
-	public String getView(Principal principal,
+	public String wordSet(Principal principal,
 						  Model model,
 						  @PathVariable(name = "id") String id) {
 		User user = controlService.getUser(principal, model, MenuID.SET)
@@ -79,8 +77,6 @@ public class VocSetController {
 		WordSet wordSet = wordSetRepository.findById(Identifiable.getId(id))
 				.orElseThrow();
 
-		model.addAttribute("set", wordSet);
-		model.addAttribute("creatorName", user.getDisplayName());
 
 		Map<Word, String> progress = new HashMap<>();
 		Map<Word, String> progressReversed = new HashMap<>();
@@ -100,9 +96,11 @@ public class VocSetController {
 		model.addAttribute("words", wordSet.getWords());
 		model.addAttribute("left", wordSet.getQuestion());
 		model.addAttribute("right", wordSet.getAnswer());
+		model.addAttribute("set", wordSet);
+		model.addAttribute("creatorName", user.getDisplayName());
 
-		inject(model, "default_", wordSet, false);
-		inject(model, "reversed_", wordSet, true);
+		inject(model, "default_", user, wordSet, false);
+		inject(model, "reversed_", user, wordSet, true);
 
 		model.addAttribute("progress", progress);
 		model.addAttribute("progressReversed", progressReversed);
@@ -112,21 +110,16 @@ public class VocSetController {
 
 	private void inject(Model model,
 						String prefix,
+						User user,
 						WordSet set,
 						boolean reversed) {
-		// three times in a row to count as learned
-		double learned = ((double) (words.stream()
-				.filter(word -> map.containsKey(word.getId()))
-				.map(word -> map.get(word.getId()))
-				.filter(voc -> isLearned(voc, reversed))
-				.count()) / words.size()) * 100.;
+		long countGlobalLearned = wordViewRepository.countGlobalLearned(set.getId(), user.getId(), reversed, LearningMode.TEXT, AnswerClassification.WRONG);
+		long countGlobalLearning = wordViewRepository.countGlobalLearning(set.getId(), user.getId(), reversed);
+
+		double learned = countGlobalLearned / (set.getWords().size() * 100.);
+		double learning = (countGlobalLearning - countGlobalLearned) / (set.getWords().size() * 100.);
+
 		model.addAttribute(prefix + "vLearned", learned);
-
-		double learning = (((double) (words.stream()
-				.filter(word -> map.containsKey(word.getId()))
-				.filter(word -> hasViews(map.get(word.getId()), reversed))
-				.count()) / words.size()) * 100.);
-
 		model.addAttribute(prefix + "vLearning", learning);
 
 		double unknown = 100.0 - (learned + learning);
@@ -135,14 +128,16 @@ public class VocSetController {
 
 	@GetMapping("{id}/delete")
 	@PreAuthorize("hasAnyAuthority('site:set')")
-	public String delete(Principal principal,
-						 Model model,
-						 @PathVariable(name = "id") String id) {
-		Optional<User> user = controlService.getUser(principal, model, MenuID.SET);
-		WordSet set = wordSetRepository.findByID(Identifiable.getId(id))
-				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
+	public String deleteWordSet(Principal principal,
+								Model model,
+								@PathVariable(name = "id") String id) {
+		User user = controlService.getUser(principal, model, MenuID.SET)
+				.orElseThrow();
+		WordSet wordSet = wordSetRepository.findById(Identifiable.getId(id))
+				.orElseThrow();
 
-		model.addAttribute("set", set);
+		model.addAttribute("set", wordSet);
+		log.info("{} tries to delete word-set {}", user, wordSet);
 
 		return "deleteSet";
 	}
@@ -151,25 +146,28 @@ public class VocSetController {
 	@PreAuthorize("hasAnyAuthority('site:set')")
 	public String deleteConfirm(Principal principal,
 								@PathVariable(name = "id") String id) {
-		User user = userRepository.findByPrinciple(principal);
-		WordSet set = wordSetRepository.findByID(Identifiable.getId(id))
-				.orElseThrow(() -> new IllegalStateException("Voc ID is invalid!"));
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
+				.orElseThrow();
 
-		if (set.getOwner() != user.getId()) {
-			log.warn(user.getId() + user.toString() + " tries to access delete confirm!");
-			throw new IllegalStateException("O.o what?");
+		if (set.getOwner().getId() != user.getId()) {
+			log.warn("{} accessed set/{id}/deleteConfirm without being the owner!", user);
+			return "redirect:/logout";
 		}
 
-		wordSetRepository.remove(set);
+		log.warn("{} confirmed deleted word-set {}", user, set);
+		wordSetRepository.delete(set);
 
 		return "redirect:/sets";
 	}
 
 	@GetMapping("import")
 	@PreAuthorize("hasAnyAuthority('site:import')")
-	public String imp(Principal principal,
-					  Model model) {
-		Optional<User> user = controlService.getUser(principal, model, MenuID.SET);
+	public String importWordSet(Principal principal,
+								Model model) {
+		User user = controlService.getUser(principal, model, MenuID.SET)
+				.orElseThrow();
 
 		model.addAttribute("languages", Language.values());
 
@@ -184,7 +182,8 @@ public class VocSetController {
 						   @RequestParam("langLeft") String langLeft,
 						   @RequestParam("langRight") String langRight,
 						   HttpServletResponse response) throws IOException {
-		User user = userRepository.findByPrinciple(principal);
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
 
 		if (file.isEmpty()) {
 			response.sendRedirect("/set/import");
@@ -201,45 +200,43 @@ public class VocSetController {
 				lines.add(line);
 			}
 
-			if (wordSetRepository.parallel()
-					.anyMatch(v -> v.getName().equalsIgnoreCase(name))) {
+			if (wordSetRepository.existsByName(name)) {
 				response.sendRedirect("/set/import");
+				// TODO: Send error code to user
 				return;
 			}
-
-			System.out.println(langLeft);
-			System.out.println(langRight);
 
 			Language left = Language.valueOf(langLeft);
 			Language right = Language.valueOf(langRight);
 
-			WordSet set = new WordSet(wordSetRepository.generateID(),
+			WordSet wordSet = wordSetRepository.save(new WordSet(0L,
 					name,
-					user.getId(),
-					SAVE_FORMAT.format(LocalDateTime.now()),
-					new HashSet<>());
+					user,
+					new HashSet<>(),
+					left,
+					right,
+					EditPolicy.OWNER,
+					LocalDateTime.now(),
+					new HashSet<>()));
 
 			for (String l : lines) {
 				String[] split = l.split(";");
 				if (split.length != 2) continue;
 
-				Word v = new Word(wordRepository.generateID(),
+				Word v = new Word(0L,
+						wordSet,
 						split[0],
 						left,
 						split[1],
 						right);
 
-				wordRepository.insert(v);
-
-				set.getVocabularies().add(v.getId());
+				wordSet.getWords().add(wordRepository.save(v));
 			}
 
-			wordSetRepository.insert(set);
+			wordSetRepository.saveAndFlush(wordSet);
+			wordRepository.flush();
 
-			response.sendRedirect("/set/" + set.getVisibleId() + "/");
-
-			// Path path = Paths.get(fileName);
-			// Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			response.sendRedirect("/set/" + wordSet.getVisibleId() + "/");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,6 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@NonNull
 	@Query("select u from user u where u.username = ?1")
 	Optional<User> findByUsername(@NonNull String username);
+
+	@Query("select u from user u order by u.role, u.username")
+	List<User> findByAllOrderByRoleAscUsernameAsc();
 
 
 

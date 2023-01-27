@@ -29,47 +29,12 @@
                    class="btn btn-success">Full</a>
             </div>
 
-            <br/><br/>
-
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-label="Learned"
-                     th:style="'width: ' + ${default_vLearned} + '%'" th:attr="aria-valuenow=${default_vLearned}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-label="Learning"
-                     th:style="'width: ' + ${default_vLearning} + '%'" th:attr="aria-valuenow=${default_vLearning}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-label="Unknown"
-                     th:style="'width: ' + ${default_vUnknown} + '%'" th:attr="aria-valuenow=${default_vUnknown}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <p class="text-end">
-                <span th:text="${left.getName()}"></span>
-                <i class="fa-solid fa-arrow-right"></i>
-                <span th:text="${right.getName()}"></span>
-            </p>
-
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-label="Learned"
-                     th:style="'width: ' + ${reversed_vLearned} + '%'" th:attr="aria-valuenow=${reversed_vLearned}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" aria-label="Learning"
-                     th:style="'width: ' + ${reversed_vLearning} + '%'" th:attr="aria-valuenow=${reversed_vLearning}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-label="Unknown"
-                     th:style="'width: ' + ${reversed_vUnknown} + '%'" th:attr="aria-valuenow=${reversed_vUnknown}"
-                     aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <p class="text-end">
-                <span th:text="${right.getName()}"></span>
-                <i class="fa-solid fa-arrow-right"></i>
-                <span th:text="${left.getName()}"></span>
-            </p>
-
             <hr>
 
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
+                    <th style="display: none;" scope="col"></th>
                     <th scope="col" th:text="${left.getName()}"></th>
                     <th scope="col" th:text="${right.getName()}"></th>
                     <th scope="col">
@@ -88,6 +53,7 @@
                 <tbody>
 
                 <tr th:each="word : ${words}">
+                    <td style="display: none;" class="ts-visible-id" th:text="${word.getVisibleId()}"></td>
                     <td class="ts-question" th:text="${word.getQuestion()}"></td>
                     <td class="ts-answer" th:text="${word.getAnswer()}"></td>
                     <td>

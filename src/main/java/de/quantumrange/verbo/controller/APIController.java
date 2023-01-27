@@ -106,11 +106,12 @@ public class APIController {
 		Word word = wordRepository.findById(Identifiable.getId(data.get("voc")))
 				.orElseThrow();
 		
-		if (set.getOwner().getId() != user.getId())
-			throw new IllegalStateException("Only owner edits allowed");
+		if (!set.canEdit(user))
+			throw new IllegalStateException("No permission to edit!");
 		
 		set.getWords().remove(word);
-		wordSetRepository.save(set);
+		wordRepository.delete(word);
+		wordSetRepository.saveAndFlush(set);
 		
 		return true;
 	}

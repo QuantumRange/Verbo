@@ -50,7 +50,7 @@ public class UserController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.USER)
 				.orElseThrow();
 		
-		if (user.getMeta().get(MetaKey.FORCE_PASSWORD_CHANGE.getMapKey()).equals("true")) {
+		if (user.isForcedPasswordChange()) {
 			// If password error is in model then don't show that
 			if (!model.containsAttribute("error")) {
 				model.addAttribute("error", "You must change your password after resetting it!");

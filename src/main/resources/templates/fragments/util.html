@@ -39,8 +39,9 @@
 </div>
 
 <div th:fragment="card(user, set)">
-    <!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.WordSet"*/-->
-	<div class="card text-center m-2" th:classappend="${user.getMarked().contains(set.getId()) ? 'card-marked' : ''}">
+	<!--/*@thymesVar id="set" type="de.quantumrange.verbo.model.WordSet"*/-->
+	<!--/*@thymesVar id="user" type="de.quantumrange.verbo.model."*/-->
+	<div class="card text-center m-2" th:classappend="${user.getMarked().contains(set) ? 'card-marked' : ''}">
 		<span hidden th:text="${set.getVisibleId()}"></span>
 		<div class="card-body">
 			<h5 class="card-title">
@@ -50,7 +51,7 @@
 
 			<p class="card-text">
 				Created on: <span th:text="${set.getTimestampStr()}"></span><br>
-				Words: <span th:text="${set.getVocabularies().size()}"></span>
+				Words: <span th:text="${set.getWords().size()}"></span>
 			</p>
 
 			<div class="btn-group" role="group" aria-label="Basic mixed styles example">
@@ -62,7 +63,7 @@
 				<a type="button"
 				   th:class="${'btn btn-outline-primary mark-' + set.getVisibleId()}"
 				   th:alt="${set.getVisibleId()}"
-				   th:text="${user.hasSet(set) ? 'Unmark' : 'Mark'}"
+				   th:text="${user.getMarked().contains(set) ? 'Unmark' : 'Mark'}"
 				   onclick="toggleMark(this)">Mark</a>
 			</div>
 		</div>

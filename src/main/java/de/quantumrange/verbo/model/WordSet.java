@@ -30,6 +30,7 @@ public class WordSet implements Identifiable {
 	@Deprecated(forRemoval = true)
 	private static final DateTimeFormatter SIMPLE_GERMAN_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+	
 	@Id
 	@GenericGenerator(name = "id",
 			strategy = "de.quantumrange.verbo.model.generator.IdGenerator",
@@ -71,7 +72,7 @@ public class WordSet implements Identifiable {
 
 
 	public boolean canEdit(User user) {
-		return editors.contains(user) || owner.equals(user);
+		return user.getRole() == Role.ADMIN || editors.contains(user) || owner.equals(user);
 	}
 
 	// Thymeleaf usages

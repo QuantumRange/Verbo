@@ -40,7 +40,7 @@ public class IdGenerator implements IdentifierGenerator {
 			
 			do {
 				id = rnd.nextLong();
-			} while (exists(id, tableName, connection));
+			} while (exists(id, tableName, connection) || id <= 0);
 			
 			return id;
 		} catch (SQLException e) {

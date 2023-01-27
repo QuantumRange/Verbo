@@ -96,7 +96,7 @@ public class HomeController {
 	public @NotNull String login(Model model,
 	                             @RequestParam(name = "username", defaultValue = "") String username) {
 		model.addAttribute("username", autoLogin ? "QuantumRange" : username);
-		model.addAttribute("password", autoLogin ? "password" : "");
+		model.addAttribute("password", autoLogin ? "That's dangerous" : "");
 		return "login";
 	}
 	
@@ -159,7 +159,7 @@ public class HomeController {
 		if (!invite.isValid())
 			return "Invite isn't valid anymore.";
 		
-		if (!userRepository.existsUsername(username))
+		if (userRepository.existsUsername(username))
 			return "Username exists already!";
 		
 		User user = new User(0L,

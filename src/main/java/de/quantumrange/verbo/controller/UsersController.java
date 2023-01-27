@@ -85,12 +85,12 @@ public class UsersController {
 		Role newRole = Role.valueOf(role);
 
 		if (targetUser.getRole().ordinal() < user.getRole().ordinal() ||
-				newRole.ordinal() <= user.getRole().ordinal()) {
-			log.warn("{} tried to change {} user's role from {} to {} but don't has the permission!", user, targetUser, role, newRole);
+				newRole.ordinal() < user.getRole().ordinal()) {
+			log.warn("{} tried to change {} user's role from {} to {} but don't has the permission!", user, targetUser, targetUser.getRole(), newRole);
 			return false;
 		}
 
-		log.warn("{} modified {} user's role from {} to {}", user, targetUser, role, newRole);
+		log.warn("{} modified {} user's role from {} to {}", user, targetUser, targetUser.getRole(), newRole);
 		targetUser.setRole(newRole);
 		userRepository.saveAndFlush(targetUser);
 

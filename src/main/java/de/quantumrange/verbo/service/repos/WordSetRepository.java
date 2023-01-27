@@ -18,6 +18,6 @@ public interface WordSetRepository extends JpaRepository<WordSet, Long> {
 	boolean existsByName(String name);
 	
 	@Query("select ws from word_set ws where ws.owner.id = ?1")
-	List<WordSet> findWordSetsByOwner();
+	List<WordSet> findWordSetsByOwner(long ownerId);
 	
 }

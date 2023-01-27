@@ -1,5 +1,6 @@
 package de.quantumrange.verbo.service.repos;
 
+import de.quantumrange.verbo.model.Role;
 import de.quantumrange.verbo.model.User;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("select u from user u order by u.role, u.username")
 	List<User> findByAllOrderByRoleAscUsernameAsc();
 
+	@Query("select u from user u where u.role = ?1")
+	List<User> findByRole(Role role);
+	
 }

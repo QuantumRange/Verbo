@@ -122,9 +122,6 @@ public class User implements UserDetails, Identifiable {
 
 		result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
 		result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
-		result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
-		result = 31 * result + (getMarked() != null ? getMarked().hashCode() : 0);
-		result = 31 * result + (getMeta() != null ? getMeta().hashCode() : 0);
 		result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
 
 		return result;

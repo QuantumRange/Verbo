@@ -30,6 +30,10 @@ public class Course implements Identifiable {
 	@Column(nullable = false)
 	private String name;
 	
+	@ManyToOne
+	@JoinColumn(name = "owner_id")
+	private User owner;
+	
 	@ManyToMany
 	@JoinTable(name = "course_user",
 			joinColumns = @JoinColumn(name = "course_id"),

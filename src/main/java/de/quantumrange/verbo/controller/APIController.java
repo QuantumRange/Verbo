@@ -120,8 +120,8 @@ public class APIController {
 		return new TSVoc(Long.toString(word.getId()),
 				word.getQuestion(),
 				word.getAnswer(),
-				word.getAnswerLang(),
-				word.getQuestionLang(),
+				word.getOwner().getQuestion(),
+				word.getOwner().getAnswer(),
 				wordViewRepository.findWordViewsByUser(user.getId(), word.getId(), PageRequest.of(1, 5))
 						.map(view -> new TSVocView(view.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
 								view.getAnswer(),

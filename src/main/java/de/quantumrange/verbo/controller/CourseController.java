@@ -85,6 +85,7 @@ public class CourseController {
 		
 		Course course = courseRepository.saveAndFlush(new Course(0L,
 				name,
+				user,
 				new HashSet<>(),
 				new HashSet<>(),
 				"No upcoming tests :)",

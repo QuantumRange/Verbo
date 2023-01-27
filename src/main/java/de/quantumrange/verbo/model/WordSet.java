@@ -20,14 +20,20 @@ import java.util.Set;
 public class WordSet implements Identifiable {
 
 	// TODO: Config with custom format type
+	
+	@Deprecated(forRemoval = true)
 	public static final DateTimeFormatter SAVE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+	
+	@Deprecated(forRemoval = true)
 	private static final DateTimeFormatter GERMAN_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+	
+	@Deprecated(forRemoval = true)
 	private static final DateTimeFormatter SIMPLE_GERMAN_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 	@Id
 	@GenericGenerator(name = "id",
 			strategy = "de.quantumrange.verbo.model.generator.IdGenerator",
-			parameters = {@org.hibernate.annotations.Parameter(name = "table", value = "vocabulary")})
+			parameters = {@org.hibernate.annotations.Parameter(name = "table", value = "word_set")})
 	@GeneratedValue(generator = "id")
 	private long id;
 
@@ -43,7 +49,11 @@ public class WordSet implements Identifiable {
 			joinColumns = @JoinColumn(name = "set_id"),
 			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> editors;
-
+	
+	@ManyToMany
+	@JoinTable(name = "user_marked", joinColumns = @JoinColumn(name = "marked_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private Set<User> markedBy;
+	
 	@Enumerated(EnumType.STRING)
 	private Language question;
 

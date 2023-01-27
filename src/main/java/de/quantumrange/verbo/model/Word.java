@@ -26,12 +26,8 @@ public class Word implements Identifiable {
 	
 	@Column(nullable = false)
 	private String question;
-	@Enumerated(EnumType.STRING)
-	private Language questionLang;
 	@Column(nullable = false)
 	private String answer;
-	@Enumerated(EnumType.STRING)
-	private Language answerLang;
 	
 	@Override
 	public boolean equals(Object o) {

@@ -213,6 +213,7 @@ public class VocSetController {
 					name,
 					user,
 					new HashSet<>(),
+					new HashSet<>(),
 					left,
 					right,
 					EditPolicy.OWNER,
@@ -226,9 +227,7 @@ public class VocSetController {
 				Word v = new Word(0L,
 						wordSet,
 						split[0],
-						left,
-						split[1],
-						right);
+						split[1]);
 
 				wordSet.getWords().add(wordRepository.save(v));
 			}

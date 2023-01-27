@@ -64,7 +64,7 @@ public class HomeController {
 		
 		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
-		model.addAttribute("yourSets", wordSetRepository.findWordSetsByOwner());
+		model.addAttribute("yourSets", wordSetRepository.findWordSetsByOwner(user.getId()));
 		model.addAttribute("markedSets", user.getMarked());
 		
 		return "sets";
@@ -96,7 +96,7 @@ public class HomeController {
 	public @NotNull String login(Model model,
 	                             @RequestParam(name = "username", defaultValue = "") String username) {
 		model.addAttribute("username", autoLogin ? "QuantumRange" : username);
-		model.addAttribute("password", autoLogin ? "That's dangerous" : "");
+		model.addAttribute("password", autoLogin ? "password" : "");
 		return "login";
 	}
 	

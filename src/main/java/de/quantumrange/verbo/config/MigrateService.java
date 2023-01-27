@@ -43,7 +43,6 @@ public class MigrateService implements CommandLineRunner {
 	
 	@Autowired
 	public MigrateService(UserRepository userRepository,
-	                      PasswordEncoder passwordEncoder,
 	                      WordSetRepository wordSetRepository,
 	                      WordRepository wordRepository,
 	                      CourseRepository courseRepository,

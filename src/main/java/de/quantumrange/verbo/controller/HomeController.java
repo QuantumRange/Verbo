@@ -62,7 +62,7 @@ public class HomeController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
 				.orElseThrow();
 		
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
 		model.addAttribute("yourSets", wordSetRepository.findWordSetsByOwner());
 		model.addAttribute("markedSets", user.getMarked());
@@ -87,7 +87,7 @@ public class HomeController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.HOME)
 				.orElseThrow();
 		
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
 		return "home";
 	}
@@ -108,8 +108,7 @@ public class HomeController {
 	
 	@PostMapping("register")
 	@ResponseBody
-	public String register(@NotNull Model model,
-	                       @RequestBody RegisterRequest request) {
+	public String register(@RequestBody RegisterRequest request) {
 		String username = request.username
 				.trim()
 				.replaceAll("[^A-Za-zàèìòùÀÈÌÒÙ_\\-()?¿! ]", "");
@@ -172,8 +171,7 @@ public class HomeController {
 				new HashMap<>(),
 				Role.USER);
 		
-		invite.getUsages().add(userRepository.saveAndFlush(user));
-		inviteRepository.save(invite);
+		userRepository.saveAndFlush(user);
 		
 		return "success:" + user.getUsername();
 	}

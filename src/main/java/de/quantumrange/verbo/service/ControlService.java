@@ -44,7 +44,7 @@ public class ControlService {
 		
 		model.addAttribute("navbarSelector", id.name);
 		model.addAttribute("courses", courseRepository.findByWatcher(user.get().getId()));
-		model.addAttribute("user", user);
+		model.addAttribute("user", user.get());
 		
 		return user;
 	}

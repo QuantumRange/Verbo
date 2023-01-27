@@ -12,6 +12,8 @@ import java.util.Optional;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
+	@Query("select (count(u) > 0) from user u")
+	boolean existsAny();
 	@Query("select (count(u) > 0) from user u where u.username = ?1")
 	boolean existsUsername(String username);
 

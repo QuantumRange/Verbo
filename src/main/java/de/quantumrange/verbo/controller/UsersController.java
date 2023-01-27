@@ -65,7 +65,7 @@ public class UsersController {
 		User user = userRepository.findByPrinciple(principal)
 				.orElseThrow();
 
-		Invite invite = inviteRepository.saveAndFlush(new Invite(0L, Invite.generateCode(), user, LocalDateTime.now(), new ArrayList<>(), true));
+		Invite invite = inviteRepository.saveAndFlush(new Invite(0L, Invite.generateCode(), user, LocalDateTime.now(), true));
 
 		model.addAttribute("inviteCode", invite.getCode());
 

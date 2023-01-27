@@ -40,7 +40,7 @@ public class LearnController {
 	                     @RequestParam(value = "mode", defaultValue = "text") String mode) throws IOException {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
 				.orElseThrow();
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
 		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
 				.orElseThrow();

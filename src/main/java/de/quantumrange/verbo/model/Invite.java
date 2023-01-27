@@ -35,12 +35,6 @@ public class Invite {
 	@Column(nullable = false)
 	private LocalDateTime created;
 
-	@OneToMany
-	@JoinTable(name = "invite_user",
-			joinColumns = @JoinColumn(name = "invite"),
-			inverseJoinColumns = @JoinColumn(name = "user"))
-	private List<User> usages;
-
 	@Column(nullable = false)
 	private boolean valid;
 

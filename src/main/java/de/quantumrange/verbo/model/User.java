@@ -99,8 +99,12 @@ public class User implements UserDetails, Identifiable {
 		getMeta().put(key.getMapKey(), obj.toString());
 	}
 	
-	public String get(MetaKey key) {
-		return getMeta().get(key);
+	public String get(@NotNull MetaKey key, @Nullable String defaultValue) {
+		return getMeta().getOrDefault(key.getMapKey(), defaultValue);
+	}
+	
+	public boolean isForcedPasswordChange() {
+		return get(MetaKey.FORCE_PASSWORD_CHANGE, "").equals("true");
 	}
 	
 	@JsonIgnore

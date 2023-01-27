@@ -51,7 +51,7 @@ public class CourseController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES)
 				.orElseThrow();
 		
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
 		boolean all = showAll.equals("true") && user.hasPermission(Permission.COURSE_VIEW_ALL);
 		
@@ -131,7 +131,7 @@ public class CourseController {
 	                     @PathVariable(name = "id") String id) {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.COURSES)
 				.orElseThrow();
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
+		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
 		
 		Course course = courseRepository.findById(Identifiable.getId(id))
 				.orElseThrow();

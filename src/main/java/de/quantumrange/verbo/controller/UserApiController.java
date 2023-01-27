@@ -40,8 +40,8 @@ public class UserApiController {
 		
 		final Map<String, Object> data = new HashMap<>();
 		
-		data.put(MetaKey.LEARNING_LOOP_AMOUNT.getMapKey(), user.get(MetaKey.LEARNING_LOOP_AMOUNT));
-		data.put(MetaKey.LEARNING_SETTINGS.getMapKey(), user.get(MetaKey.LEARNING_SETTINGS));
+		data.put(MetaKey.LEARNING_LOOP_AMOUNT.getMapKey(), user.get(MetaKey.LEARNING_LOOP_AMOUNT, null));
+		data.put(MetaKey.LEARNING_SETTINGS.getMapKey(), user.get(MetaKey.LEARNING_SETTINGS, null));
 		
 		return data;
 	}

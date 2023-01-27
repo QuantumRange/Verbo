@@ -3,8 +3,8 @@ package de.quantumrange.verbo.controller;
 import de.quantumrange.verbo.model.MetaKey;
 import de.quantumrange.verbo.model.User;
 import de.quantumrange.verbo.service.ControlService;
-import de.quantumrange.verbo.service.UserService;
-import de.quantumrange.verbo.service.VocSetService;
+import de.quantumrange.verbo.service.repos.UserRepository;
+import de.quantumrange.verbo.service.repos.WordSetRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,25 +20,28 @@ import java.util.Map;
 @RequestMapping("api/user")
 public class UserApiController {
 	
-	private final VocSetService service;
-	private final UserService userService;
+	private final WordSetRepository wordSetRepository;
+	private final UserRepository userRepository;
 	private final ControlService controlService;
 	
-	public UserApiController(VocSetService service, UserService userService, ControlService controlService) {
-		this.service = service;
-		this.userService = userService;
+	public UserApiController(WordSetRepository wordSetRepository,
+	                         UserRepository userRepository,
+	                         ControlService controlService) {
+		this.wordSetRepository = wordSetRepository;
+		this.userRepository = userRepository;
 		this.controlService = controlService;
 	}
 	
 	@PostMapping(path = "request")
 	@PreAuthorize("hasAnyAuthority('api:user:request')")
 	public Map<String, Object> client(Principal principal) {
-		User user = userService.findByPrinciple(principal);
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
 		
 		final Map<String, Object> data = new HashMap<>();
 		
-		data.put(MetaKey.LEARNING_LOOP_AMOUNT.getName(), user.get(MetaKey.LEARNING_LOOP_AMOUNT));
-		data.put(MetaKey.LEARNING_SETTINGS.getName(), user.get(MetaKey.LEARNING_SETTINGS));
+		data.put(MetaKey.LEARNING_LOOP_AMOUNT.getMapKey(), user.get(MetaKey.LEARNING_LOOP_AMOUNT));
+		data.put(MetaKey.LEARNING_SETTINGS.getMapKey(), user.get(MetaKey.LEARNING_SETTINGS));
 		
 		return data;
 	}
@@ -46,25 +50,20 @@ public class UserApiController {
 	@PreAuthorize("hasAnyAuthority('api:user:update')")
 	public boolean update(Principal principal,
 	                      @RequestBody Map<String, String> map) {
-		User user = userService.findByPrinciple(principal);
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
 		
 		String key = map.get("key");
 		String value = map.get("value");
 		
-		MetaKey<?> metaKey = null;
+		boolean exists = Arrays.stream(MetaKey.values())
+				.anyMatch(mk -> mk.getMapKey().equals(key));
 		
-		for (MetaKey<?> val : MetaKey.values) {
-			if (val.getName().equals(key)) {
-				metaKey = val;
-				break;
-			}
-		}
+		if (!exists) return false;
 		
-		if (metaKey == null) return false;
+		user.getMeta().put(key, value);
 		
-		metaKey.set(user, value);
-		
-		userService.update(user);
+		userRepository.save(user);
 		
 		return true;
 	}

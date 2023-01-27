@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -32,4 +33,16 @@ public class Word implements Identifiable {
 	@Enumerated(EnumType.STRING)
 	private Language answerLang;
 	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Word word = (Word) o;
+		return getId() == word.getId();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId());
+	}
 }

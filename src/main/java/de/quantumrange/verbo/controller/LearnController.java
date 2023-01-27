@@ -2,9 +2,9 @@ package de.quantumrange.verbo.controller;
 
 import de.quantumrange.verbo.model.*;
 import de.quantumrange.verbo.service.ControlService;
-import de.quantumrange.verbo.service.UserService;
-import de.quantumrange.verbo.service.VocService;
-import de.quantumrange.verbo.service.VocSetService;
+import de.quantumrange.verbo.service.repos.UserRepository;
+import de.quantumrange.verbo.service.repos.WordRepository;
+import de.quantumrange.verbo.service.repos.WordSetRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,20 +23,12 @@ import java.util.stream.Collectors;
 @RequestMapping("learn")
 public class LearnController {
 	
-	public static final int MAX_SESSION_SIZE = 6;
-	
-	private final VocSetService vocSetService;
-	private final UserService userService;
-	private final VocService vocService;
+	private final WordSetRepository wordSetRepository;
 	private final ControlService controlService;
 	
-	public LearnController(VocSetService vocSetService,
-	                       UserService userService,
-	                       VocService vocService,
+	public LearnController(WordSetRepository wordSetRepository,
 	                       ControlService controlService) {
-		this.vocSetService = vocSetService;
-		this.userService = userService;
-		this.vocService = vocService;
+		this.wordSetRepository = wordSetRepository;
 		this.controlService = controlService;
 	}
 	
@@ -47,10 +38,11 @@ public class LearnController {
 	                     Model model,
 	                     @PathVariable String id,
 	                     @RequestParam(value = "mode", defaultValue = "text") String mode) throws IOException {
-		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.SET);
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
+		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
+				.orElseThrow();
+		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
 		
-		WordSet set = vocSetService.findByID(Identifiable.getId(id))
+		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
 				.orElseThrow();
 		String[] modes = mode.split(" ");
 		

@@ -14,7 +14,6 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 
 @Table(appliesTo = "word_set")
 @Entity(name = "word_set")

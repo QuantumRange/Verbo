@@ -23,12 +23,6 @@
             <h3>Your sets</h3>
             <hr class="col-12">
             <th:block th:replace="fragments/util :: cards(user=${user},sets=${yourSets})"></th:block>
-
-            <br/>
-
-            <h3>All sets</h3>
-            <hr class="col-12">
-            <th:block th:replace="fragments/util :: cards(user=${user},sets=${sets})"></th:block>
         </div>
     </div>
     <div th:replace="fragments/header :: footer"></div>

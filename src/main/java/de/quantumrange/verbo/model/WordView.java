@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public final class WordView {
 	private User owner;
 	
 	@Column(nullable = false)
-	private long timestamp;
+	private LocalDateTime timestamp;
 	
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String answer;

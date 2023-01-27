@@ -43,8 +43,14 @@ public class User implements UserDetails, Identifiable {
 	private String password;
 	
 	@ManyToMany
+	@JoinTable(name = "course_user",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "course_id"))
+	private List<Course> courses;
+	
+	@ManyToMany
 	@JoinTable(name = "user_marked", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "marked_id"))
-	private Set<Word> marked;
+	private Set<WordSet> marked;
 	
 	@ElementCollection
 	@MapKeyColumn(name = "meta_key")
@@ -87,6 +93,14 @@ public class User implements UserDetails, Identifiable {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+	
+	public void set(MetaKey key, Object obj) {
+		getMeta().put(key.getMapKey(), obj.toString());
+	}
+	
+	public String get(MetaKey key) {
+		return getMeta().get(key);
 	}
 	
 	@JsonIgnore

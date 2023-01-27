@@ -1,9 +1,6 @@
 package de.quantumrange.verbo.controller;
 
-import de.quantumrange.verbo.model.Identifiable;
-import de.quantumrange.verbo.model.Invite;
-import de.quantumrange.verbo.model.Role;
-import de.quantumrange.verbo.model.User;
+import de.quantumrange.verbo.model.*;
 import de.quantumrange.verbo.service.ControlService;
 import de.quantumrange.verbo.service.repos.InviteRepository;
 import de.quantumrange.verbo.service.repos.UserRepository;
@@ -88,7 +85,7 @@ public class UsersController {
 		Role newRole = Role.valueOf(role);
 
 		if (targetUser.getRole().ordinal() < user.getRole().ordinal() ||
-				newRole.ordinal() < user.getRole().ordinal()) {
+				newRole.ordinal() <= user.getRole().ordinal()) {
 			log.warn("{} tried to change {} user's role from {} to {} but don't has the permission!", user, targetUser, role, newRole);
 			return false;
 		}
@@ -106,13 +103,13 @@ public class UsersController {
 	public String resetUserPasswordByName(Principal principal,
 										  @PathVariable(name = "user") String userIdStr,
 										  Model model) {
+		// TODO: Replace with ConfirmController
 		User user = controlService.getUser(principal, model, ControlService.MenuID.USERS)
 				.orElseThrow();
 		User other = userRepository.findById(Identifiable.getId(userIdStr))
 				.orElseThrow();
 
 		if (other.getRole().ordinal() <= user.getRole().ordinal()) {
-
 			return "redirect:/users";
 		}
 
@@ -123,67 +120,75 @@ public class UsersController {
 	}
 
 
-	@GetMapping("users/{user}/delete")
+	@GetMapping("users/{userIdStr}/delete")
 	@PreAuthorize("hasAnyAuthority('api:update:role')")
 	public String deleteUser(Principal principal,
-							 @PathVariable String user,
+							 @PathVariable String userIdStr,
 							 Model model) {
-
-		Optional<User> u = controlService.getUser(principal, model, ControlService.MenuID.USERS);
-		User other = userRepository.findByID(Identifiable.getId(user))
+		// TODO: Replace with ConfirmController
+		User user = controlService.getUser(principal, model, ControlService.MenuID.USERS)
+				.orElseThrow();
+		User target = userRepository.findById(Identifiable.getId(userIdStr))
 				.orElseThrow();
 
-		if (other.getRole().ordinal() <= u.getRole().ordinal()) {
+		if (target.getRole().ordinal() <= user.getRole().ordinal()) {
 			return "redirect:/users";
 		}
 
-		model.addAttribute("username", other.getUsername());
-		model.addAttribute("otherID", other.getVisibleId());
+		model.addAttribute("username", target.getUsername());
+		model.addAttribute("otherID", target.getVisibleId());
 
 		return "resetUser";
 	}
 
-	@GetMapping("users/{user}/confirm")
+	@GetMapping("users/{userIdStr}/confirm")
 	@PreAuthorize("hasAnyAuthority('api:update:role')")
 	public String resetPasswordConfirm(Principal principal,
 									   Model model,
-									   @PathVariable String user) {
-		Optional<User> c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
-		User other = userRepository.findByID(Identifiable.getId(user))
+									   @PathVariable String userIdStr) {
+		User user = controlService.getUser(principal, model, ControlService.MenuID.USERS)
 				.orElseThrow();
-
-		if (other.getRole().ordinal() <= c.getRole().ordinal()) return "redirect:/";
+		User target = userRepository.findById(Identifiable.getId(userIdStr))
+				.orElseThrow();
+		
+		if (target.getRole().ordinal() <= user.getRole().ordinal()) {
+			log.warn("{} tried to reset {} user's password but don't has the permission!", userIdStr, target);
+			return "redirect:/";
+		}
 
 		final char[] charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 		final Random rnd = new Random();
 		final StringBuilder pw = new StringBuilder();
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 10; i++) {
 			pw.append(charset[rnd.nextInt(charset.length)]);
 		}
 
 		model.addAttribute("newPassword", pw.toString());
-		model.addAttribute("username", other.getUsername());
+		model.addAttribute("username", target.getUsername());
 
-		other.set(MetaKey.FORCE_PASSWORD_CHANGE, true);
-		other.setPassword(passwordEncoder.encode(pw.toString()));
-
-		userRepository.update(other);
+		target.getMeta().put(MetaKey.FORCE_PASSWORD_CHANGE.getMapKey(), String.valueOf(true));
+		target.setPassword(passwordEncoder.encode(pw.toString()));
+		
+		userRepository.saveAndFlush(target);
+		
 		return "resetPasswordSuccess";
 	}
 
-	@GetMapping("users/{user}/delete/confirm")
+	@GetMapping("users/{userIdStr}/delete/confirm")
 	@PreAuthorize("hasAnyAuthority('api:delete:user')")
 	public String resetUserPasswordByName(Principal principal,
 										  Model model,
-										  @PathVariable String user) {
-		Optional<User> c = controlService.getUser(principal, model, ControlService.MenuID.USERS);
-		User other = userRepository.findByID(Identifiable.getId(user))
+										  @PathVariable String userIdStr) {
+		User user = controlService.getUser(principal, model, ControlService.MenuID.USERS)
+				.orElseThrow();
+		User target = userRepository.findById(Identifiable.getId(userIdStr))
 				.orElseThrow();
 
-		if (c.getRole() != Role.ROOT || other.getRole() == Role.ROOT) return "redirect:/";
+		if (user.getRole() != Role.ADMIN || target.getRole() == Role.ADMIN) return "redirect:/";
 
-		userRepository.remove(other);
+		userRepository.delete(target);
+		
 		return "redirect:/users";
 	}
 

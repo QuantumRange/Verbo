@@ -9,6 +9,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -39,7 +40,7 @@ public class Course implements Identifiable {
 	@JoinTable(name = "course_vocabularies",
 			joinColumns = @JoinColumn(name = "course_id"),
 			inverseJoinColumns = @JoinColumn(name = "set_id"))
-	private Set<WordSet> vocabularies;
+	private Set<WordSet> wordSets;
 	
 	// For tests, etc.
 	@Column(nullable = false)
@@ -54,4 +55,16 @@ public class Course implements Identifiable {
 	@Column(nullable = false)
 	private String code;
 	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Course course = (Course) o;
+		return getId() == course.getId();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId(), getName());
+	}
 }

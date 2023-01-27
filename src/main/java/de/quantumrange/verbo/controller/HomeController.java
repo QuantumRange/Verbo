@@ -1,8 +1,12 @@
 package de.quantumrange.verbo.controller;
 
+import de.quantumrange.verbo.model.Invite;
+import de.quantumrange.verbo.model.MetaKey;
 import de.quantumrange.verbo.model.Role;
 import de.quantumrange.verbo.model.User;
-import de.quantumrange.verbo.service.*;
+import de.quantumrange.verbo.service.CommonPasswordDetectionService;
+import de.quantumrange.verbo.service.ControlService;
+import de.quantumrange.verbo.service.repos.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,59 +17,55 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Controller
 public class HomeController {
 	
-	private final UserService userService;
-	private final InviteService inviteService;
+	private final UserRepository userRepository;
+	private final InviteRepository inviteRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final VocSetService vocSetController;
-	private final VocService vocController;
-	private final CourseService courseController;
+	private final WordSetRepository wordSetRepository;
+	private final WordRepository wordRepository;
+	private final CourseRepository courseRepository;
 	private final ControlService controlService;
-	private final CommonPasswordDetectionService commonPasswordDetectionService;
+	private final CommonPasswordDetectionService cpdService;
 	
 	@Value("${autoLogin}")
 	private boolean autoLogin;
 	
 	@Autowired
-	public HomeController(UserService userService, InviteService inviteService, PasswordEncoder passwordEncoder,
-	                      VocSetService vocSetController, VocService vocController, CourseService courseController,
-	                      ControlService controlService, CommonPasswordDetectionService commonPasswordDetectionService) {
-		this.userService = userService;
-		this.inviteService = inviteService;
+	public HomeController(UserRepository userRepository,
+	                      InviteRepository inviteRepository,
+	                      PasswordEncoder passwordEncoder,
+	                      WordSetRepository wordSetRepository,
+	                      WordRepository wordRepository,
+	                      CourseRepository courseRepository,
+	                      ControlService controlService, CommonPasswordDetectionService cpdService) {
+		this.userRepository = userRepository;
+		this.inviteRepository = inviteRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.vocSetController = vocSetController;
-		this.vocController = vocController;
-		this.courseController = courseController;
+		this.wordSetRepository = wordSetRepository;
+		this.wordRepository = wordRepository;
+		this.courseRepository = courseRepository;
 		this.controlService = controlService;
-		this.commonPasswordDetectionService = commonPasswordDetectionService;
+		this.cpdService = cpdService;
 	}
-	
-	private static String formatting(String str) {
-		return str.replaceAll(";", ":").replaceAll("\"", "'");
-	}
+
+//	private static String formatting(String str) {
+//		return str.replaceAll(";", ":").replaceAll("\"", "'");
+//	}
 	
 	@GetMapping("sets")
 	public String sets(Principal principal,
 	                   Model model) {
-		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.SET);
+		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
+				.orElseThrow();
 		
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
+		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
 		
-		model.addAttribute("yourSets", vocSetController.parallel()
-				.filter(v -> v.getOwner() == user.getId())
-				.collect(Collectors.toSet()));
-		model.addAttribute("markedSets", vocSetController.parallel()
-				.filter(v -> user.getMarked().contains(v.getId()))
-				.collect(Collectors.toSet()));
-		model.addAttribute("sets", vocSetController.parallel()
-				.collect(Collectors.toSet()));
+		model.addAttribute("yourSets", wordSetRepository.findWordSetsByOwner());
+		model.addAttribute("markedSets", user.getMarked());
 		
 		return "sets";
 	}
@@ -73,7 +73,9 @@ public class HomeController {
 	@GetMapping("live")
 	public String live(Principal principal,
 	                   Model model) {
-		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.LIVE);
+		// TODO
+		User user = controlService.getUser(principal, model, ControlService.MenuID.LIVE)
+				.orElseThrow();
 		
 		return "live/student";
 	}
@@ -82,9 +84,10 @@ public class HomeController {
 	@PreAuthorize("hasAnyAuthority('site:home')")
 	public String home(Principal principal,
 	                   Model model) {
-		Optional<User> user = controlService.getUser(principal, model, ControlService.MenuID.HOME);
+		User user = controlService.getUser(principal, model, ControlService.MenuID.HOME)
+				.orElseThrow();
 		
-		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE)) return "redirect:/myAccount";
+		if (user.get(MetaKey.FORCE_PASSWORD_CHANGE).equals("true")) return "redirect:/myAccount";
 		
 		return "home";
 	}
@@ -105,7 +108,7 @@ public class HomeController {
 	
 	@PostMapping("register")
 	@ResponseBody
-	public String register(@NotNull Model m,
+	public String register(@NotNull Model model,
 	                       @RequestBody RegisterRequest request) {
 		String username = request.username
 				.trim()
@@ -141,25 +144,36 @@ public class HomeController {
 		if (!pw.equals(pwRepeat))
 			return ".-. Passwords must match";
 		
-		if (commonPasswordDetectionService.isUsedPassword(pw))
-			return "This is one of the top 10000 most used passwords. Please educate yourself on how to create a secure password and come back later. (Oh and don't reuse passwords across websites. I'm serious. That's dangerous.)";
+		if (cpdService.isUsedPassword(pw))
+			return "This is one of the top 10000 most used passwords. Please educate yourself on how to create a secure password and come back later. (Oh and don't reuse passwords across websites. I'model serious. That's dangerous.)";
 		
 		if (pw.length() <= 6)
 			return "Your password is too short";
 		
-		if (!inviteService.exist(inviteToken))
+		Optional<Invite> code = inviteRepository.findByCode(inviteToken);
+		
+		if (code.isEmpty())
 			return "Can't find that invite code.";
 		
-		if (userService.findByUsername(username).isPresent())
+		Invite invite = code.get();
+		
+		if (!invite.isValid())
+			return "Invite isn't valid anymore.";
+		
+		if (!userRepository.existsUsername(username))
 			return "Username exists already!";
 		
-		User user = new User(userService.generateID(),
+		User user = new User(0L,
 				username,
 				nickname,
 				passwordEncoder.encode(pw),
+				new ArrayList<>(),
+				new HashSet<>(),
+				new HashMap<>(),
 				Role.USER);
 		
-		userService.insert(user);
+		invite.getUsages().add(userRepository.saveAndFlush(user));
+		inviteRepository.save(invite);
 		
 		return "success:" + user.getUsername();
 	}

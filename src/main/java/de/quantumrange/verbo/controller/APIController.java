@@ -1,17 +1,24 @@
 package de.quantumrange.verbo.controller;
 
 import de.quantumrange.verbo.model.*;
-import de.quantumrange.verbo.service.*;
+import de.quantumrange.verbo.service.CommonPasswordDetectionService;
+import de.quantumrange.verbo.service.repos.UserRepository;
+import de.quantumrange.verbo.service.repos.WordRepository;
+import de.quantumrange.verbo.service.repos.WordSetRepository;
+import de.quantumrange.verbo.service.repos.WordViewRepository;
+import de.quantumrange.verbo.util.StringUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,37 +26,38 @@ import java.util.Map;
 @RequestMapping("/api/")
 public class APIController {
 	
-	private final UserService userService;
-	private final VocSetService vocSetService;
-	private final VocService vocService;
-	private final VocDetailService vocDetailService;
+	private final UserRepository userRepository;
+	private final WordSetRepository wordSetRepository;
+	private final WordRepository wordRepository;
+	private final WordViewRepository wordViewRepository;
 	
 	@Autowired
-	public APIController(UserService userService,
-	                     VocSetService vocSetService,
-	                     VocService vocService,
-	                     VocDetailService vocDetailService) {
-		this.userService = userService;
-		this.vocSetService = vocSetService;
-		this.vocService = vocService;
-		this.vocDetailService = vocDetailService;
+	public APIController(UserRepository userRepository,
+	                     WordSetRepository wordSetRepository,
+	                     WordRepository wordRepository,
+	                     WordViewRepository wordViewRepository) {
+		this.userRepository = userRepository;
+		this.wordSetRepository = wordSetRepository;
+		this.wordRepository = wordRepository;
+		this.wordViewRepository = wordViewRepository;
 	}
 	
 	@PostMapping(path = "set/mark")
 	@PreAuthorize("hasAnyAuthority('api:set:mark')")
 	public boolean mark(Principal principal,
 	                    @RequestParam(name = "id") String id) {
-		User user = userService.findByPrinciple(principal);
-		WordSet set = vocSetService.findByID(Identifiable.getId(id))
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
 				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
 		
-		if (user.getMarked().contains(set.getId())) {
-			user.getMarked().remove(set.getId());
+		if (user.getMarked().contains(set)) {
+			user.getMarked().remove(set);
 		} else {
-			user.getMarked().add(set.getId());
+			user.getMarked().add(set);
 		}
 		
-		userService.update(user);
+		userRepository.save(user);
 		
 		return true;
 	}
@@ -58,19 +66,17 @@ public class APIController {
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public TSVocSet requestSet(Principal principal,
 	                           @RequestBody String id) {
-		User user = userService.findByPrinciple(principal);
-		WordSet set = vocSetService.findByID(Identifiable.getId(id))
-				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		WordSet set = wordSetRepository.findById(Identifiable.getId(id))
+				.orElseThrow();
 		
 		TSVocSet tsSet = new TSVocSet(Long.toString(set.getId()),
 				set.getName(),
-				set.getOwner(),
+				set.getOwner().getId(),
 				new ArrayList<>());
 		
-		for (Long vocabulary : set.getVocabularies()) {
-			Word word = vocService.findByID(vocabulary)
-					.orElseThrow();
-			
+		for (Word word : set.getWords()) {
 			tsSet.vocabularies().add(getVoc(user, word));
 		}
 		
@@ -81,9 +87,10 @@ public class APIController {
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public TSVoc requestVoc(Principal principal,
 	                        @RequestBody String id) {
-		User user = userService.findByPrinciple(principal);
-		Word word = vocService.findByID(Identifiable.getId(id))
-				.orElseThrow(() -> new IllegalArgumentException("Invalid Set ID!"));
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		Word word = wordRepository.findById(Identifiable.getId(id))
+				.orElseThrow();
 		
 		return getVoc(user, word);
 	}
@@ -92,17 +99,18 @@ public class APIController {
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public boolean requestVocDelete(Principal principal,
 	                                @RequestBody Map<String, String> data) {
-		User user = userService.findByPrinciple(principal);
-		WordSet set = vocSetService.findByID(Identifiable.getId(data.get("set")))
-				.orElseThrow(() -> new IllegalArgumentException("Invalid set ID!"));
-		Word word = vocService.findByID(Identifiable.getId(data.get("voc")))
-				.orElseThrow(() -> new IllegalArgumentException("Invalid voc ID!"));
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		WordSet set = wordSetRepository.findById(Identifiable.getId(data.get("set")))
+				.orElseThrow();
+		Word word = wordRepository.findById(Identifiable.getId(data.get("voc")))
+				.orElseThrow();
 		
 		if (set.getOwner().getId() != user.getId())
 			throw new IllegalStateException("Only owner edits allowed");
 		
-		set.getVocabularies().remove(word.getId());
-		vocSetService.update(set);
+		set.getWords().remove(word);
+		wordSetRepository.save(set);
 		
 		return true;
 	}
@@ -114,47 +122,42 @@ public class APIController {
 				word.getAnswer(),
 				word.getAnswerLang(),
 				word.getQuestionLang(),
-				vocDetailService.findViewBy(user.getId(), word.getId())
-						.map(vi -> vi.getViews().stream()
-								.map(view -> new TSVocView(view.getTimestamp(),
-										view.getAnswer(),
-										view.getCorrectness(),
-										view.getClassification().ordinal(),
-										view.getMode().ordinal(),
-										view.getAnswerDuration(),
-										view.isReversed()))
-								.sorted((o1, o2) -> Long.compare(o2.timestamp, o1.timestamp))
-								.limit(5)
-								.toList())
-						
-						.orElseGet(Collections::emptyList));
+				wordViewRepository.findWordViewsByUser(user.getId(), word.getId(), PageRequest.of(1, 5))
+						.map(view -> new TSVocView(view.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+								view.getAnswer(),
+								view.getCorrectness(),
+								view.getClassification().ordinal(),
+								view.getMode().ordinal(),
+								view.getAnswerDuration(),
+								view.isReversed()))
+						.toList());
 	}
 	
 	@PostMapping("learn")
 	@PreAuthorize("hasAnyAuthority('site:learn')")
 	@ResponseBody
-	public boolean learnResponse(@RequestHeader(value = HttpHeaders.USER_AGENT) String userAgent,
-	                             Principal principal,
+	public boolean learnResponse(Principal principal,
 	                             @RequestBody TSLearnResult result) {
-		User user = userService.findByPrinciple(principal);
-		Word word = vocService.findByID(Long.parseLong(result.snowflake))
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		Word word = wordRepository.findById(Long.parseLong(result.snowflake))
 				.orElseThrow();
 		
-		UserAgent ua = UserAgent.parseUserAgentString(userAgent);
-		
-		vocDetailService.insert(user.getId(),
-				Long.parseLong(result.snowflake()),
-				new WordView(result.timestamp(),
-						result.answer(),
-						CommonPasswordDetectionService.damerauLevenshteinDistance(
-								result.answer,
-								result.reversed ? word.getQuestion() : word.getAnswer()),
-						AnswerClassification.values()[result.classification()],
-						result.responseTime(),
-						LearningMode.values()[result.mode()],
-						ua.getBrowser(),
-						ua.getOperatingSystem(),
-						result.reversed()));
+		wordViewRepository.save(new WordView(
+				0L,
+				word,
+				user,
+				LocalDateTime.now(),
+				result.answer,
+				StringUtil.damerauLevenshteinDistance(
+						result.answer,
+						result.reversed ? word.getQuestion() : word.getAnswer()),
+				AnswerClassification.values()[result.classification()],
+				result.responseTime(),
+				LearningMode.values()[result.mode()],
+				result.reversed
+		));
+
 		return true;
 	}
 	

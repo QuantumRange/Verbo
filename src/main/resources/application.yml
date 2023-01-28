@@ -3,3 +3,5 @@ spring:
     active: @spring.profiles.active@
   application:
     name: Verbo
+server:
+  port: 80

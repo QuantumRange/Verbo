@@ -1,8 +1,26 @@
-# Verbo
+# Verbo (**Still in development**)
 
 A vocabulary learning platform.
 
-**In Development**
+## Docker
+
+You can use verbo via docker-compose, here is one example:
+
+```yaml
+version: '3.7'
+services:
+  verbo:
+    image: qrqrqr/verbo:latest
+    ports:
+      - "80:80"
+    environment:
+      - spring.datasource.url=jdbc:mariadb://localhost:3306/verbo
+      - spring.datasource.username=root
+      - spring.datasource.password=root
+      - spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+```
+
+To configure the Config, set the environment variables as shown.
 
 ## Config
 
@@ -32,6 +50,7 @@ The table below lists all supported SQL databases. If you don't see yours in the
 | HSQLDB               | `jdbc:hsqldb://<url>:<port>/<database>`     | `org.hsqldb.jdbc.JDBCDriver`                   |
 
 Example database configuration for MariaDB:
+
 ```properties
 spring.datasource.url=jdbc:mariadb://localhost:3306/verbo
 spring.datasource.username=root

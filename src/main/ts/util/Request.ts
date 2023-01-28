@@ -94,6 +94,19 @@ export function requestVocDelete(setId: string, vocId: string): Promise<boolean>
 	});
 }
 
+export function requestVocEdit(setId: string, vocId: string, newQuestion: string, newAnswer: string): Promise<boolean> {
+	return new Promise<boolean>((resolve, reject) => {
+		req("/api/voc/edit", JSON.stringify({
+			set: setId,
+			voc: vocId,
+			newQuestion: newQuestion,
+			newAnswer: newAnswer
+		}), true).then((rawJson: string) => {
+			resolve(true);
+		}).catch(reason => reject(reason));
+	});
+}
+
 export function requestSet(id: string): Promise<VocSet> {
 	return new Promise<VocSet>((resolve, reject) => {
 		req("/api/set", id, true).then(rawJSON => {

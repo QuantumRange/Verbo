@@ -50,7 +50,6 @@ The table below lists all supported SQL databases. If you don't see yours in the
 | HSQLDB               | `jdbc:hsqldb://<url>:<port>/<database>`     | `org.hsqldb.jdbc.JDBCDriver`                   |
 
 Example database configuration for MariaDB:
-
 ```properties
 spring.datasource.url=jdbc:mariadb://localhost:3306/verbo
 spring.datasource.username=root

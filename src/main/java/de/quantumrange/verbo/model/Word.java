@@ -41,4 +41,14 @@ public class Word implements Identifiable {
 	public int hashCode() {
 		return Objects.hash(getId());
 	}
+	
+	@Override
+	public String toString() {
+		return "Word{" +
+				"id=" + id +
+				", owner=" + owner.getId() +
+				", question='" + question + '\'' +
+				", answer='" + answer + '\'' +
+				'}';
+	}
 }

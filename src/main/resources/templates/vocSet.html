@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="de" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Verbo - Set</title>
@@ -71,9 +71,10 @@
                         </a>
                         &#160;&#160;
                         <!--/*@thymesVar id="user" type="de.quantumrange.verbo.model.User"*/-->
-                        <a th:if="${set.canEdit(user)}" class="ts-link-action ts-edit-action text-warning">
+                        <a th:if="${set.canEdit(user)}"
+                           class="ts-link-action ts-edit-action text-warning">
                             <i class="fa-solid fa-pen-to-square"></i>
-                            Edit
+                            <span class="ts-link-action-text">Edit</span>
                         </a>
                         &#160;
                         <a th:if="${set.canEdit(user)}"

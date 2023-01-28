@@ -9,6 +9,8 @@ import de.quantumrange.verbo.service.repos.WordViewRepository;
 import de.quantumrange.verbo.util.StringUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/")
 public class APIController {
+	
+	private static final Logger log = LoggerFactory.getLogger(APIController.class);
 	
 	private final UserRepository userRepository;
 	private final WordSetRepository wordSetRepository;
@@ -116,6 +120,38 @@ public class APIController {
 		return true;
 	}
 	
+	@PostMapping(path = "voc/edit")
+	@PreAuthorize("hasAnyAuthority('api:basic')")
+	public boolean requestVocEdit(Principal principal,
+	                                @RequestBody Map<String, String> data) {
+		User user = userRepository.findByPrinciple(principal)
+				.orElseThrow();
+		WordSet set = wordSetRepository.findById(Identifiable.getId(data.get("set")))
+				.orElseThrow();
+		Word word = wordRepository.findById(Identifiable.getId(data.get("voc")))
+				.orElseThrow();
+		
+		String newQuestion = data.get("newQuestion");
+		String newAnswer = data.get("newAnswer");
+		
+		if (!set.canEdit(user))
+			throw new IllegalStateException("No permission to edit!");
+		
+		// TODO: Better checks (Check Service?)
+		if (newQuestion.replaceAll("[^A-Za-z0-9]", "").length() == 0)
+			throw new IllegalArgumentException();
+		if (newAnswer.replaceAll("[^A-Za-z0-9]", "").length() == 0)
+			throw new IllegalArgumentException();
+		
+		log.info("{} edited word {} with new question '{}' and '{}'", user, word, newQuestion, newAnswer);
+		
+		word.setQuestion(newQuestion);
+		word.setAnswer(newAnswer);
+		
+		wordRepository.saveAndFlush(word);
+		
+		return true;
+	}
 	@NotNull
 	private TSVoc getVoc(User user, Word word) {
 		return new TSVoc(Long.toString(word.getId()),

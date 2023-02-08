@@ -21,6 +21,7 @@ services:
 ```
 
 To configure the Config, set the environment variables as shown.
+The default admin user is `root`:`root`.
 
 ## Config
 

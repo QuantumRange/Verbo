@@ -33,7 +33,7 @@ public class SetupService implements CommandLineRunner {
 	}
 	
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		if (!userRepository.existsAny()) {
 			log.warn("No users found! Creating admin user...");
 			

@@ -35,7 +35,7 @@ function onEdit(element: HTMLElement | Element) {
 
 	if (vocTr.getElementsByClassName('ts-delete-action').length === 0) {
 		const questionText = (vocTr.getElementsByClassName('ts-e-question')[0] as HTMLInputElement).value;
-		const answerText   = (vocTr.getElementsByClassName('ts-e-answer'  )[0] as HTMLInputElement).value;
+		const answerText = (vocTr.getElementsByClassName('ts-e-answer')[0] as HTMLInputElement).value;
 
 		popup('Edit word', 'Change the word and click save.',
 			[
@@ -74,7 +74,7 @@ function onEdit(element: HTMLElement | Element) {
 	vocTr.getElementsByClassName('ts-mark-action')[0].remove();
 
 	function createInput(node: HTMLElement,
-						 className: string,
+	                     className: string,
 	                     text: string) {
 		const inputElement: HTMLInputElement = document.createElement('input');
 

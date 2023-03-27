@@ -95,8 +95,8 @@ public class HomeController {
 	@GetMapping("login")
 	public @NotNull String login(Model model,
 	                             @RequestParam(name = "username", defaultValue = "") String username) {
-		model.addAttribute("username", autoLogin ? "QuantumRange" : username);
-		model.addAttribute("password", autoLogin ? "password" : "");
+		model.addAttribute("username", autoLogin ? "root" : username);
+		model.addAttribute("password", autoLogin ? "root" : "");
 		return "login";
 	}
 	

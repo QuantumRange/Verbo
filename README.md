@@ -1,9 +1,7 @@
 # Verbo (**Still in development**)
-
 A vocabulary learning platform.
 
 ## Docker
-
 You can use verbo via docker-compose, here is one example:
 
 ```yaml
@@ -23,8 +21,40 @@ services:
 To configure the Config, set the environment variables as shown.
 The default admin user is `root`:`root`.
 
-## Config
+### MariaDB Quickstart
+Here is a quick start docker compose file for a mariadb setup for Verbo.
 
+```yaml
+version: '3.7'
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=my_root_password
+      - MYSQL_DATABASE=verbo
+      - MYSQL_USER=my_user
+      - MYSQL_PASSWORD=my_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  verbo:
+    image: qrqrqr/verbo:latest
+    depends_on:
+      - mariadb
+    ports:
+      - "80:80"
+    environment:
+      - spring.datasource.url=jdbc:mariadb://mariadb:3306/verbo
+      - spring.datasource.username=my_user
+      - spring.datasource.password=my_password
+      - spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+
+volumes:
+  verbo_data:
+```
+
+## Config
 The configuration for my Verbo application can be set up in several ways, but the three most common methods are
 
 - You can pass config values as command line arguments when starting the program. For example, if you want to set the
@@ -38,7 +68,6 @@ For more information about configuring the application, refer to the Spring Boot
 documentation: [24. Externalised Configuration](https://docs.spring.io/spring-boot/docs/2.1.9.RELEASE/reference/html/boot-features-external-config.html)
 
 ### SQL Database
-
 The table below lists all supported SQL databases. If you don't see yours in the list, create a new issue.
 
 | SQL Implementation   | `spring.datasource.url`                     | `spring.datasource.driver-class-name`          |

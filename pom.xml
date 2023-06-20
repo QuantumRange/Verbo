@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.quantumrange</groupId>
     <artifactId>verbo</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.1</version>
     <name>Verbo</name>
     <description>An open source replacement for Quizlet</description>
 
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.0.0-jre</version>
+            <version>[32.0.0,)</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

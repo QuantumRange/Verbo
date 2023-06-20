@@ -1,5 +1,41 @@
-# Verbo (**Still in development**)
+# Verbo
+**This repository is inactive, but I will fix bugs or continue development if there is interest.**
 A vocabulary learning platform.
+
+## Features
+- [x] Learning vocabulary 
+- [x] Learning groups
+- [ ] Live Mode (Competition)
+- [ ] Group right system
+
+## Screenshots
+Here are all the groups that the student has access to. Teachers can see all courses and create new ones.
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/55f676f5-f3d1-4c07-98d5-f9c004231504) <br>
+They are also quickly accessible via a drop-down menu. <br>
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/3d035a38-79ec-43b6-a326-00e8740388ad) <br>
+A group can contain multable sets, including sets that are in different groups. 
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/7520d4ee-f0af-4c88-b7c4-d943d594ebf4) <br>
+Teachers can set information for tests and exams, with directly selectable vocabulary.
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/4d2ec9e7-1740-4748-985c-ef5008722ca3) <br>
+Each user has a personalised view of a set, they see witch words they know they want with which direction.
+They can then choose a learning mode, for the go 'Card' is great because you don't need to type and at home 'Text'. But 'Full' automatically gives you cards and then text, depending on how well you know the word.
+
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/45c45372-78c5-43e3-88dd-2c1c84702c82) <br>
+Here are a few screenshots for the 'Card' mode:
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/d77bc4f6-4d45-4231-9d43-7223cef7d6c4) <br>
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/4e1392a8-458c-476a-bf1f-43ea1979a8fe) <br>
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/93b65084-475f-4a92-87d5-0aabfe4369bc) <br>
+
+Here are a few screenshots for the 'Text' mode:
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/47ff424e-9c55-468d-8205-321beafa152f) <br>
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/a5a5ae8f-5e62-4938-9723-573f16b8a110) <br>
+
+The user can customise the learning algorithm.
+So if you want to type the word correctly every time and then move on, you can tweak the sliders.
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/6edb8541-b098-48a1-8000-6e8b896aef9f) <br>
+
+For administrators and teachers there is also an admin panel with all users and the ability to change their rank and password (the system generates a random password for the user and then forces them to change it on their first login) and delete the account.
+![image](https://github.com/QuantumRange/Verbo/assets/49843948/551507e4-362c-4f3e-8f42-3c8f7906df7f) <br>
 
 ## Docker
 You can use verbo via docker-compose, here is one example:

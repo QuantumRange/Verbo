@@ -39,7 +39,7 @@ public class Course implements Identifiable {
 			joinColumns = @JoinColumn(name = "course_id"),
 			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> users;
-
+	
 	@ManyToMany
 	@JoinTable(name = "course_vocabularies",
 			joinColumns = @JoinColumn(name = "course_id"),

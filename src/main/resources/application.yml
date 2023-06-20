@@ -4,4 +4,4 @@ spring:
   application:
     name: Verbo
 server:
-  port: 80
+  port: 8080

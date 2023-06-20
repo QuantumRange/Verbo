@@ -122,3 +122,5 @@ spring.datasource.username=root
 spring.datasource.password=root
 spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 ```
+
+Btw. if you want to change the port because you don't run this in a docker container you can add `server.port=<port>`.

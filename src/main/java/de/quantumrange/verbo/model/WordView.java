@@ -20,11 +20,11 @@ public final class WordView {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, updatable = false)
 	private long id;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "word_id", nullable = false)
 	private Word word;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
 	private User owner;
@@ -49,5 +49,5 @@ public final class WordView {
 	
 	@Column(nullable = false)
 	private boolean reversed;
-
+	
 }

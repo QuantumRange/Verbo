@@ -1,7 +1,10 @@
 package de.quantumrange.verbo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Table;
@@ -35,7 +38,7 @@ public class User implements UserDetails, Identifiable {
 	
 	@Column(nullable = false, unique = true)
 	private String username;
-
+	
 	@Column(nullable = false)
 	private String displayName;
 	
@@ -115,28 +118,28 @@ public class User implements UserDetails, Identifiable {
 		
 		return grantedAuthorities;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		int result = (int) (getId() ^ (getId() >>> 32));
-
+		
 		result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
 		result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
 		result = 31 * result + (getRole() != null ? getRole().hashCode() : 0);
-
+		
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-
+		
 		User user = (User) o;
-
+		
 		return getId() == user.getId();
 	}
-
+	
 	@Override
 	public String toString() {
 		return "User{" +

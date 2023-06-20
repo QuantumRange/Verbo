@@ -21,7 +21,7 @@ import java.util.HashSet;
 public class SetupService implements CommandLineRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(SetupService.class);
- 
+	
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +29,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Component
+/**
+ * This service is for converting the old file based data structure into a sql data structure.
+ * Because all development with the old data structure was private your probably don't need this.\
+ *
+ * @deprecated 0.1.1
+ */
 public class MigrateService implements CommandLineRunner {
 	
 	private static final DateTimeFormatter SAVE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");

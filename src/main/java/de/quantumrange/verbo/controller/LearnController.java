@@ -1,9 +1,10 @@
 package de.quantumrange.verbo.controller;
 
-import de.quantumrange.verbo.model.*;
+import de.quantumrange.verbo.model.Identifiable;
+import de.quantumrange.verbo.model.LearningMode;
+import de.quantumrange.verbo.model.User;
+import de.quantumrange.verbo.model.WordSet;
 import de.quantumrange.verbo.service.ControlService;
-import de.quantumrange.verbo.service.repos.UserRepository;
-import de.quantumrange.verbo.service.repos.WordRepository;
 import de.quantumrange.verbo.service.repos.WordSetRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;

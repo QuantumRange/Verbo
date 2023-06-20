@@ -7,8 +7,4 @@ public enum AnswerClassification {
 	
 	WRONG, RIGHT, MARKED_AS_RIGHT;
 	
-	public boolean isCorrect() {
-		return this != WRONG;
-	}
-
 }

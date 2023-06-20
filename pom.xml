@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.quantumrange</groupId>
     <artifactId>verbo</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <name>Verbo</name>
     <description>An open source replacement for Quizlet</description>
 

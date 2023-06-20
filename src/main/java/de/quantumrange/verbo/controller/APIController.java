@@ -1,19 +1,16 @@
 package de.quantumrange.verbo.controller;
 
 import de.quantumrange.verbo.model.*;
-import de.quantumrange.verbo.service.CommonPasswordDetectionService;
 import de.quantumrange.verbo.service.repos.UserRepository;
 import de.quantumrange.verbo.service.repos.WordRepository;
 import de.quantumrange.verbo.service.repos.WordSetRepository;
 import de.quantumrange.verbo.service.repos.WordViewRepository;
 import de.quantumrange.verbo.util.StringUtil;
-import eu.bitwalker.useragentutils.UserAgent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -123,7 +120,7 @@ public class APIController {
 	@PostMapping(path = "voc/edit")
 	@PreAuthorize("hasAnyAuthority('api:basic')")
 	public boolean requestVocEdit(Principal principal,
-	                                @RequestBody Map<String, String> data) {
+	                              @RequestBody Map<String, String> data) {
 		User user = userRepository.findByPrinciple(principal)
 				.orElseThrow();
 		WordSet set = wordSetRepository.findById(Identifiable.getId(data.get("set")))
@@ -152,6 +149,7 @@ public class APIController {
 		
 		return true;
 	}
+	
 	@NotNull
 	private TSVoc getVoc(User user, Word word) {
 		return new TSVoc(Long.toString(word.getId()),
@@ -194,7 +192,7 @@ public class APIController {
 				LearningMode.values()[result.mode()],
 				result.reversed
 		));
-
+		
 		return true;
 	}
 	

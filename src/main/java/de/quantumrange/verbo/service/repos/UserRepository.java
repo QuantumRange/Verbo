@@ -15,24 +15,29 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("select (count(u) > 0) from user u")
 	boolean existsAny();
+	
 	@Query("select (count(u) > 0) from user u where u.username = ?1")
 	boolean existsUsername(String username);
-
-
+	
+	/**
+	 * @deprecated 0.1.1
+	 */
 	default Optional<User> findByPrinciple(@Nullable Principal principal) {
-		if (principal == null) return Optional.empty();
-		if (principal.getName() == null) return Optional.empty();
-
-		return findByUsername(principal.getName());
+		return findByPrinciple(Optional.ofNullable(principal));
 	}
-
+	
+	default Optional<User> findByPrinciple(Optional<Principal> principal) {
+		return principal.map(p -> p.getName())
+				.flatMap(username -> findByUsername(username));
+	}
+	
 	@NonNull
 	@Query("select u from user u where u.username = ?1")
 	Optional<User> findByUsername(@NonNull String username);
-
+	
 	@Query("select u from user u order by u.role, u.username")
 	List<User> findByAllOrderByRoleAscUsernameAsc();
-
+	
 	@Query("select u from user u where u.role = ?1")
 	List<User> findByRole(Role role);
 	

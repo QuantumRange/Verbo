@@ -1,7 +1,6 @@
 package de.quantumrange.verbo.controller;
 
 import de.quantumrange.verbo.model.Invite;
-import de.quantumrange.verbo.model.MetaKey;
 import de.quantumrange.verbo.model.Role;
 import de.quantumrange.verbo.model.User;
 import de.quantumrange.verbo.service.CommonPasswordDetectionService;
@@ -26,8 +25,6 @@ public class HomeController {
 	private final InviteRepository inviteRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final WordSetRepository wordSetRepository;
-	private final WordRepository wordRepository;
-	private final CourseRepository courseRepository;
 	private final ControlService controlService;
 	private final CommonPasswordDetectionService cpdService;
 	
@@ -39,15 +36,11 @@ public class HomeController {
 	                      InviteRepository inviteRepository,
 	                      PasswordEncoder passwordEncoder,
 	                      WordSetRepository wordSetRepository,
-	                      WordRepository wordRepository,
-	                      CourseRepository courseRepository,
 	                      ControlService controlService, CommonPasswordDetectionService cpdService) {
 		this.userRepository = userRepository;
 		this.inviteRepository = inviteRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.wordSetRepository = wordSetRepository;
-		this.wordRepository = wordRepository;
-		this.courseRepository = courseRepository;
 		this.controlService = controlService;
 		this.cpdService = cpdService;
 	}
@@ -77,7 +70,8 @@ public class HomeController {
 		User user = controlService.getUser(principal, model, ControlService.MenuID.LIVE)
 				.orElseThrow();
 		
-		return "live/student";
+//		return "live/student";\
+		return "working";
 	}
 	
 	@GetMapping

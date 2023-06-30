@@ -72,7 +72,7 @@ services:
       - MYSQL_USER=my_user
       - MYSQL_PASSWORD=my_password
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - verbo_data:/var/lib/mysql
 
   verbo:
     image: qrqrqr/verbo:latest

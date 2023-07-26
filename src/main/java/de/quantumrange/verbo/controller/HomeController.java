@@ -45,20 +45,6 @@ public class HomeController {
 		this.cpdService = cpdService;
 	}
 	
-	@GetMapping("sets")
-	public String sets(Principal principal,
-	                   Model model) {
-		User user = controlService.getUser(principal, model, ControlService.MenuID.SET)
-				.orElseThrow();
-		
-		if (user.isForcedPasswordChange()) return "redirect:/myAccount";
-		
-		model.addAttribute("yourSets", wordSetRepository.findWordSetsByOwner(user.getId()));
-		model.addAttribute("markedSets", user.getMarked());
-		
-		return "sets";
-	}
-	
 	@GetMapping("live")
 	public String live(Principal principal,
 	                   Model model) {

@@ -23,6 +23,9 @@
             <h3>Your sets</h3>
             <hr class="col-12">
             <th:block th:replace="fragments/util :: cards(user=${user},sets=${yourSets})"></th:block>
+
+            <br/><br/>
+            <a class="btn btn-outline-info" href="/sets/new">Create new set</a>
         </div>
     </div>
     <div th:replace="fragments/header :: footer"></div>

@@ -46,7 +46,7 @@ $dropdown-bg: $dark;
 $dropdown-link-hover-bg: $light;
 $dropdown-link-active-bg: $light;
 $dropdown-link-color: $body-color;
-$dropdown-link-hover-color: $body-color;
+$dropdown-link-hover-color: $dropdown-link-color;
 
 // Alerts
 $alert-bg-scale: 0; // Adjusts shade of bg | 0 -> Base color | Negative -> Lighter | Positive -> Darker
@@ -64,6 +64,7 @@ $input-disabled-bg: $light;
 
 // Tooltips
 $tooltip-bg: $light;
+
 
 // Imports
 @import "../../../node_modules/bootstrap/scss/bootstrap";

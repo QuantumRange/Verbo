@@ -106,16 +106,16 @@ documentation: [24. Externalised Configuration](https://docs.spring.io/spring-bo
 ### SQL Database
 The table below lists all supported SQL databases. If you don't see yours in the list, create a new issue.
 
-| SQL Implementation   | `spring.datasource.url`                     | `spring.datasource.driver-class-name`          |
-|----------------------|---------------------------------------------|------------------------------------------------|
-| MySQL                | `jdbc:mysql://<url>:<port>/<database>`      | `com.mysql.cj.jdbc.Driver`                     |
-| MariaDB              | `jdbc:mariadb://<url>:<port>/<database>`    | `org.mariadb.jdbc.Driver`                      |
-| PostgreSQL           | `jdbc:postgresql://<url>:<port>/<database>` | `org.postgresql.Driver`                        |
-| Microsoft SQL Server | `jdbc:sqlserver://<url>:<port>/<database>`  | `com.microsoft.sqlserver.jdbc.SQLServerDriver` |
-| SQLite               | `jdbc:sqlite://<url>:<port>/<database>`     | `org.sqlite.JDBC`                              |
-| HSQLDB               | `jdbc:hsqldb://<url>:<port>/<database>`     | `org.hsqldb.jdbc.JDBCDriver`                   |
+| SQL Implementation   | `spring.datasource.url`                            | `spring.datasource.driver-class-name`          |
+|----------------------|----------------------------------------------------|------------------------------------------------|
+| MySQL                | `jdbc:mysql://<url>:<port>/<database>`             | `com.mysql.cj.jdbc.Driver`                     |
+| MariaDB              | `jdbc:mariadb://<url>:<port>/<database>`           | `org.mariadb.jdbc.Driver`                      |
+| PostgreSQL           | `jdbc:postgresql://<url>:<port>/<database>`        | `org.postgresql.Driver`                        |
+| Microsoft SQL Server | `jdbc:sqlserver://<url>:<port>/<database>`         | `com.microsoft.sqlserver.jdbc.SQLServerDriver` |
+| SQLite               | `jdbc:sqlite:<file_path>` / `jdbc:sqlite::memory:` | `org.sqlite.JDBC`                              |
+| HSQLDB               | `jdbc:hsqldb://<url>:<port>/<database>`            | `org.hsqldb.jdbc.JDBCDriver`                   |
 
-Example database configuration for MariaDB:
+Example database configuration for MariaDB (`application.properties`):
 ```properties
 spring.datasource.url=jdbc:mariadb://localhost:3306/verbo
 spring.datasource.username=root

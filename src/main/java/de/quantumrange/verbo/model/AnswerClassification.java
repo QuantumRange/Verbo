@@ -5,6 +5,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum AnswerClassification {
 	
-	WRONG, RIGHT, MARKED_AS_RIGHT;
+	WRONG, RIGHT, MARKED_AS_RIGHT
 	
 }

@@ -1,5 +1,12 @@
 package de.quantumrange.verbo.model;
 
+import lombok.Getter;
+
+/**
+ * TODO: Replace a const enum with a more dynamic approach
+ */
+@Deprecated
+@Getter
 public enum Language {
 	
 	GERMAN("German"),
@@ -13,7 +20,4 @@ public enum Language {
 		this.name = name;
 	}
 	
-	public String getName() {
-		return name;
-	}
 }

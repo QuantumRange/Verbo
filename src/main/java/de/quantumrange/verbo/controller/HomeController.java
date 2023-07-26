@@ -44,10 +44,6 @@ public class HomeController {
 		this.controlService = controlService;
 		this.cpdService = cpdService;
 	}
-
-//	private static String formatting(String str) {
-//		return str.replaceAll(";", ":").replaceAll("\"", "'");
-//	}
 	
 	@GetMapping("sets")
 	public String sets(Principal principal,

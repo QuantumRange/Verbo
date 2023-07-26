@@ -224,7 +224,7 @@ public class VocSetController {
 			
 			response.sendRedirect("/set/" + wordSet.getVisibleId() + "/");
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error during experimental import!", e);
 		}
 	}
 	

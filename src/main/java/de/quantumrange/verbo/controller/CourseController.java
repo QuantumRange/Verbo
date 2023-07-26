@@ -27,19 +27,16 @@ public class CourseController {
 	private final UserRepository userRepository;
 	private final CourseRepository courseRepository;
 	private final WordSetRepository wordSetRepository;
-	private final InviteRepository inviteRepository;
 	
 	@Autowired
 	public CourseController(ControlService controlService,
 	                        UserRepository userRepository,
 	                        CourseRepository courseRepository,
-	                        WordSetRepository wordSetRepository,
-	                        InviteRepository inviteRepository) {
+	                        WordSetRepository wordSetRepository) {
 		this.controlService = controlService;
 		this.userRepository = userRepository;
 		this.courseRepository = courseRepository;
 		this.wordSetRepository = wordSetRepository;
-		this.inviteRepository = inviteRepository;
 	}
 	
 	@GetMapping("courses")

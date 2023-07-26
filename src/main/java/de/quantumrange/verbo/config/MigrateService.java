@@ -27,14 +27,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
-@Component
 /**
  * This service is for converting the old file based data structure into a sql data structure.
  * Because all development with the old data structure was private your probably don't need this.\
  *
- * @deprecated 0.1.1
+ *  @deprecated 0.1.1
  */
+@Service
+@Component
+@Deprecated(since = "0.1.1")
 public class MigrateService implements CommandLineRunner {
 	
 	private static final DateTimeFormatter SAVE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");

@@ -213,13 +213,13 @@ public class APIController {
 	                 boolean reversed) {
 	}
 	
-	record TSVocSet(String id,
+	public record TSVocSet(String id,
 	                String name,
 	                long owner,
 	                List<TSVoc> vocabularies) {
 	}
 	
-	record TSLearnResult(String snowflake,
+	public record TSLearnResult(String snowflake,
 	                     long timestamp,
 	                     String answer,
 	                     int classification,

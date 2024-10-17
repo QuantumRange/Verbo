@@ -1,3 +1,5 @@
+# !! This project is no longer maintained !!
+
 # Verbo
 **This repository is inactive, but I will fix bugs or continue development if there is interest.**
 A vocabulary learning platform.

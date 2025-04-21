@@ -81,7 +81,7 @@ services:
     depends_on:
       - mariadb
     ports:
-      - "80:80"
+      - "80:8080"
     environment:
       - spring.datasource.url=jdbc:mariadb://mariadb:3306/verbo
       - spring.datasource.username=my_user
